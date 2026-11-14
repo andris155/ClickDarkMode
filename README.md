@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="assets/program-icon.png" alt="ClickDarkMode Logo" width="128" height="128" /><br/>
-  <strong>Lightweight, modern Windows 11 system tray theme switcher utility</strong><br/><br/>
+  <strong>Lightweight, modern Windows 11 system tray dark mode switcher utility</strong><br/><br/>
   <img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%2010-0078D4" alt="Platform" />
   <img src="https://img.shields.io/badge/Framework-WinUI%203-0078D4" alt="Framework" />
   <img src="https://img.shields.io/badge/Architecture-x64%20%7C%20ARM64-success" alt="Architecture" />
