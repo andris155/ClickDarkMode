@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="assets/program-icon.png" alt="ClickDarkMode Logo" width="128" height="128" /><br/>
-  <strong>Lightweight, modern Windows 11 system tray dark mode switcher utility</strong><br/><br/>
+  <strong>Lightweight, modern Windows 11 system tray dark and light mode switcher utility</strong><br/><br/>
   <img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%2010-0078D4" alt="Platform" />
   <img src="https://img.shields.io/badge/Framework-WinUI%203-0078D4" alt="Framework" />
   <img src="https://img.shields.io/badge/Architecture-x64%20%7C%20ARM64-success" alt="Architecture" />
@@ -25,7 +25,10 @@
 
 ## Overview
 
-**ClickDarkMode** is a native, ultra-lightweight Windows 11 system tray utility designed to effortlessly switch between Light and Dark themes for Applications and the Windows System UI (Taskbar, Start Menu, Shell).
+**ClickDarkMode** is a native, ultra-lightweight Windows 11 system tray utility designed to effortlessly switch between **Dark and Light mode** for Applications and the Windows System UI (Taskbar, Start Menu, Shell).
+
+> [!NOTE]
+> **Dark/Light Mode vs. Desktop Themes:** ClickDarkMode switches Windows **Dark Mode and Light Mode** (system & app color modes configured under *Windows Settings > Personalization > Colors*). It does **not** switch Windows desktop themes (`.theme` files, wallpapers, or desktop theme packs).
 
 Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features a modern Windows 11 Fluent Settings interface with Mica backdrops, custom tray icons, global keyboard shortcuts, On-Screen Display (OSD) notification banners, automated scheduling (Custom Times & offline NOAA Solar Sunrise/Sunset calculation).
 
@@ -42,7 +45,7 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
 </p>
 
 ### System Tray
-*Direct taskbar switching with theme-adaptive tray icons and native WinUI 3 flyout menu.*
+*Direct taskbar switching with mode-adaptive tray icons and native WinUI 3 flyout menu.*
 
 <p align="center">
   <img src="assets/TrayIconMoon.png" alt="System Tray (Light Mode)" width="280" />
@@ -51,7 +54,7 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
 </p>
 
 ### On-Screen Display (OSD)
-*Modern Windows 11 floating banner with smooth animations for real-time theme transitions.*
+*Modern Windows 11 floating banner with smooth animations for real-time mode transitions.*
 
 <p align="center">
   <img src="assets/OSDDarkMode.png" alt="OSD Banner (Dark Mode)" width="360" />
@@ -64,13 +67,13 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
 ## Features
 
 ### 1. Fluent WinUI 3 Settings (ClickBrightness Design)
-- Modern Windows 11 Mica backdrop (`transparencyEnabled`) with automatic dark/light theme adaptation and solid color fallbacks.
+- Modern Windows 11 Mica backdrop (`transparencyEnabled`) with automatic dark/light mode adaptation and solid color fallbacks.
 - Custom draggable title bar with embedded application icon, title, and interactive instant search box (`SettingsSearchBox`).
 - Left-side Fluent `NavigationView` organized into 5 intuitive pages:
-  - **General:** Language selection, Application Theme (Follow Windows, Dark, Light), Tray Menu Theme, Mica transparency toggle, Theme Switch Target (Both, Apps Only, Windows Only), double-click cooldown delay, OSD banner hide time (Slider + NumberBox, default 2000 ms), Start with Windows toggle (with smart Program Files detection), and factory reset.
+  - **General:** Language selection, Application Color Mode (Follow Windows, Dark, Light), Tray Menu Mode, Mica transparency toggle, Mode Switch Target (Both, Apps Only, Windows Only), double-click cooldown delay, OSD banner hide time (Slider + NumberBox, default 2000 ms), Start with Windows toggle (with smart Program Files detection), and factory reset.
   - **Tray Icon:** Separate Light & Dark icon mode toggle, Show OSD banner on tray click, Light icon picker & presets (Sun, Star, Monitor), Dark icon picker & presets (Moon, Crescent).
   - **Shortcuts:** Global keyboard shortcut toggle, interactive key combination capture button, Show OSD banner on hotkey toggle, and quick preset buttons (`Ctrl + Alt + T`, `Win + Shift + D`, `Win + Alt + T`, `Ctrl + Shift + T`).
-  - **Schedule:** Automated theme transitions with 3 modes:
+  - **Schedule:** Automated dark/light mode transitions with 3 modes:
     - *Disabled (Manual only)*
     - *Custom Time Schedule:* Independent 24-hour TimePickers for Light Mode Start Time and Dark Mode Start Time.
     - *Sunrise / Sunset Sync:* Calculates local solar sunrise and sunset times based on coordinates with 100% offline NOAA astronomical zenith mathematics. Includes one-click Auto-Detect via Windows Location API, global city preset ComboBox (30 major world cities), and live today's solar preview.
@@ -78,14 +81,14 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
   - **About:** Version info, application description, technology stack details, and license.
 
 ### 2. Modern On-Screen Display (OSD)
-- Displays a sleek, non-intrusive floating Fluent banner overlay confirming theme transitions.
-- Indication reflects the new theme and includes a matching themed icon.
+- Displays a sleek, non-intrusive floating Fluent banner overlay confirming mode transitions (Dark/Light).
+- Indication reflects the new mode and includes a matching icon.
 - Configurable auto-hide timeout (500 ms to 5000 ms, default 2000 ms).
 - Independent visibility toggles for Tray Click, Global Hotkey, and Scheduled switches.
 
 ### 3. Native WinUI 3 Tray Menu
 - Uses a borderless 1×1 topmost anchor window to display a native WinUI 3 `MenuFlyout` positioned above the taskbar icon.
-- Left-click directly toggles the theme (guarded by an accidental double-click cooldown).
+- Left-click directly toggles between Dark and Light mode (guarded by an accidental double-click cooldown).
 - Right-click opens the menu:
   - **Toggle Mode** (🖌️)
   - Separator
