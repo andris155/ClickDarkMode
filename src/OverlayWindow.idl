@@ -1,0 +1,8 @@
+namespace ThemeSwitcherApp
+{
+    [default_interface]
+    runtimeclass OverlayWindow : Microsoft.UI.Xaml.Window
+    {
+        OverlayWindow();
+    }
+}

@@ -1,0 +1,1019 @@
+<Window
+    x:Class="ThemeSwitcherApp.SettingsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ThemeSwitcherApp"
+    Title="ClickDarkMode Settings">
+
+    <Grid x:Name="RootGrid" Background="Transparent">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition FromVerticalOffset="28"/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Custom Title Bar -->
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="48" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="144"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left App Title & Icon -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10" Padding="16,0,16,0" IsHitTestVisible="False">
+                <FontIcon Glyph="&#xE790;" FontSize="18" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                <TextBlock x:Name="AppTitleBarText" Text="ClickDarkMode Settings" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Centered Search Box -->
+            <AutoSuggestBox x:Name="SettingsSearchBox"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Width="320"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            PlaceholderText="Search settings"
+                            QueryIcon="Find"/>
+        </Grid>
+
+        <!-- Modern Fluent Navigation with Submenus -->
+        <NavigationView x:Name="NavView"
+                        Grid.Row="1"
+                        PaneDisplayMode="Left"
+                        IsBackButtonVisible="Collapsed"
+                        IsSettingsVisible="False"
+                        OpenPaneLength="210"
+                        CompactPaneLength="48"
+                        Background="Transparent">
+            <NavigationView.Resources>
+                <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+                <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent"/>
+                <Thickness x:Key="NavigationViewContentGridBorderThickness">0</Thickness>
+                <CornerRadius x:Key="NavigationViewContentGridCornerRadius">0</CornerRadius>
+                <Thickness x:Key="NavigationViewContentMargin">0</Thickness>
+                <Thickness x:Key="NavigationViewPageContentMargin">0</Thickness>
+                <Thickness x:Key="NavigationViewContentGridMargin">0</Thickness>
+                <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="Transparent"/>
+                <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="Transparent"/>
+            </NavigationView.Resources>
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="NavItemGeneral" Content="General" Tag="General" IsSelected="True">
+                    <NavigationViewItem.Icon><FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE713;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavItemTray" Content="Tray Icon" Tag="Tray">
+                    <NavigationViewItem.Icon><FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE718;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavItemShortcuts" Content="Shortcuts" Tag="Shortcuts">
+                    <NavigationViewItem.Icon><FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE765;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavItemSchedule" Content="Schedule" Tag="Schedule">
+                    <NavigationViewItem.Icon><FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEC92;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem x:Name="NavItemAbout" Content="About" Tag="About">
+                    <NavigationViewItem.Icon><FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE946;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
+
+            <NavigationView.Content>
+                <ScrollViewer Padding="24,4,24,16" VerticalScrollBarVisibility="Visible">
+                    <Grid x:Name="SubmenuContainer" MaxWidth="680" HorizontalAlignment="Stretch">
+                        <Grid.ChildrenTransitions>
+                            <TransitionCollection>
+                                <EntranceThemeTransition FromVerticalOffset="28"/>
+                            </TransitionCollection>
+                        </Grid.ChildrenTransitions>
+
+                        <!-- ========================================== -->
+                        <!-- SUBMENU 1: GENERAL                         -->
+                        <!-- ========================================== -->
+                        <StackPanel x:Name="GeneralPanel" Visibility="Visible" Spacing="0">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <EntranceThemeTransition FromVerticalOffset="20"/>
+                                </TransitionCollection>
+                            </StackPanel.ChildrenTransitions>
+
+                            <!-- Page Title & Header Banner -->
+                            <Grid Padding="4,4,4,12" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE790;" FontSize="32" VerticalAlignment="Center" Margin="0,0,14,0" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="GeneralHeaderTitle" Text="General Settings" FontSize="20" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="GeneralHeaderSubtitle" Text="Windows 11 Apps &amp; System Theme Switcher" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Theme Status InfoBar (Only shown if state is inconsistent/mixed) -->
+                            <InfoBar x:Name="ThemeStatusInfoBar" IsOpen="False" Visibility="Collapsed" IsClosable="False" Severity="Warning" Margin="0,0,0,12"/>
+
+                            <!-- SECTION: APPEARANCE -->
+                            <TextBlock x:Name="AppearanceSectionTitle" Text="Appearance" FontSize="14" FontWeight="SemiBold" Margin="0,4,0,6"/>
+
+                            <!-- Language Card -->
+                            <Border x:Name="LanguageCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE774;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="LanguageTitleText" Text="Language" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="LanguageDescText" Text="Select application display language. If unsupported, English is used." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="LanguageComboBox" Grid.Column="2" Width="210" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- App Theme Card -->
+                            <Border x:Name="AppThemeCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE790;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="AppThemeTitleText" Text="Application Theme" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="AppThemeDescText" Text="Select the color theme for settings and flyout surfaces" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="AppThemeComboBox" Grid.Column="2" Width="210" VerticalAlignment="Center">
+                                        <ComboBoxItem x:Name="AppThemeItemFollow" Content="Follow Windows (app)" Tag="0"/>
+                                        <ComboBoxItem x:Name="AppThemeItemDark" Content="Dark" Tag="1"/>
+                                        <ComboBoxItem x:Name="AppThemeItemLight" Content="Light" Tag="2"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+
+                            <!-- Tray Menu Theme Card -->
+                            <Border x:Name="TrayMenuThemeCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE771;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="TrayMenuThemeTitleText" Text="Tray Menu Theme" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="TrayMenuThemeDescText" Text="Select the color theme for the notification area tray right-click menu" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="TrayMenuThemeComboBox" Grid.Column="2" Width="210" VerticalAlignment="Center">
+                                        <ComboBoxItem x:Name="TrayMenuThemeItemFollow" Content="Follow Windows (system)" Tag="0"/>
+                                        <ComboBoxItem x:Name="TrayMenuThemeItemDark" Content="Dark" Tag="1"/>
+                                        <ComboBoxItem x:Name="TrayMenuThemeItemLight" Content="Light" Tag="2"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+
+                            <!-- Transparency Card -->
+                            <Border x:Name="TransparencyCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE727;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="TransparencyTitleText" Text="Mica Transparency" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="TransparencyDescText" Text="Enable modern Windows 11 translucent Mica backdrop" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="TransparencyStatusText" Text="On" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="TransparencyToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: TARGET THEME -->
+                            <TextBlock x:Name="TargetSectionTitle" Text="Target Theme" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- Target Theme Card -->
+                            <Border x:Name="TargetCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE770;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="TargetTitleText" Text="Theme Switch Mode" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="TargetDescText" Text="Choose whether switching applies to Apps, Windows System UI (Taskbar/Start), or Both" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="TargetComboBox" Grid.Column="2" Width="210" VerticalAlignment="Center">
+                                        <ComboBoxItem x:Name="TargetItemBoth" Content="Both (Apps &amp; Windows)" Tag="Both"/>
+                                        <ComboBoxItem x:Name="TargetItemApps" Content="Apps Only" Tag="Apps"/>
+                                        <ComboBoxItem x:Name="TargetItemSystem" Content="Windows Only" Tag="System"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: TOGGLE BEHAVIOR -->
+                            <TextBlock x:Name="BehaviorSectionTitle" Text="Toggle Behavior" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- Double-Click Cooldown Card -->
+                            <Border x:Name="CooldownCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE916;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="CooldownTitleText" Text="Accidental Click Cooldown (ms)" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="CooldownDescText" Text="Ignores clicks occurring within this delay to prevent rapid double-toggling" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Slider x:Name="CooldownSlider" Minimum="0" Maximum="3000" StepFrequency="50" Width="160" VerticalAlignment="Center"/>
+                                        <NumberBox x:Name="CooldownNumberBox" Minimum="0" Maximum="3000" Width="90" SpinButtonPlacementMode="Hidden" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: ON-SCREEN DISPLAY (OSD) -->
+                            <TextBlock x:Name="OsdSectionTitle" Text="On-Screen Display (OSD)" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- OSD Theme Card -->
+                            <Border x:Name="OsdThemeCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE790;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="OsdThemeTitleText" Text="OSD Theme" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="OsdThemeDescText" Text="Select the color theme for the on-screen display banner" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="OsdThemeComboBox" Grid.Column="2" Width="210" VerticalAlignment="Center">
+                                        <ComboBoxItem x:Name="OsdThemeItemFollow" Content="Follow the theme" Tag="0"/>
+                                        <ComboBoxItem x:Name="OsdThemeItemDark" Content="Dark" Tag="1"/>
+                                        <ComboBoxItem x:Name="OsdThemeItemLight" Content="Light" Tag="2"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+
+                            <!-- OSD Hide Timeout Card -->
+                            <Border x:Name="OsdTimeoutCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE823;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="OsdTimeoutTitleText" Text="Hide Time (ms)" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="OsdTimeoutDescText" Text="Auto-hide timeout for on-screen banner overlay" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <Slider x:Name="OsdTimeoutSlider" Minimum="500" Maximum="5000" Value="2000" StepFrequency="100" Width="160" VerticalAlignment="Center"/>
+                                        <NumberBox x:Name="OsdTimeoutNumberBox" Minimum="500" Maximum="5000" Value="2000" Width="90" SpinButtonPlacementMode="Hidden" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: STARTUP & MAINTENANCE -->
+                            <TextBlock x:Name="StartupSectionTitle" Text="Startup &amp; Maintenance" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- Start With Windows Card -->
+                            <Border x:Name="StartupCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE7E8;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="StartupTitleText" Text="Start with Windows" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="StartupDescText" Text="Launch ClickDarkMode automatically when Windows starts" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="StartupStatusText" Text="Off" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="StartupToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Restore Defaults Card with Confirmation Flyout -->
+                            <Border x:Name="RestoreDefaultsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE777;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="RestoreDefaultsTitleText" Text="Restore Defaults" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="RestoreDefaultsDescText" Text="Reset all settings to initial factory defaults" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <Button x:Name="RestoreDefaultsButton" Grid.Column="2" Content="Restore Defaults" VerticalAlignment="Center">
+                                        <Button.Flyout>
+                                            <Flyout x:Name="RestoreDefaultsFlyout">
+                                                <StackPanel Spacing="12">
+                                                    <TextBlock x:Name="RestoreConfirmText" Text="All settings will be reset. Do you want to continue?" TextWrapping="Wrap" MaxWidth="260"/>
+                                                    <Button x:Name="ConfirmRestoreDefaultsButton" Content="Yes, reset settings"/>
+                                                </StackPanel>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+
+                        <!-- ========================================== -->
+                        <!-- SUBMENU 2: TRAY ICON                       -->
+                        <!-- ========================================== -->
+                        <StackPanel x:Name="TrayPanel" Visibility="Collapsed" Spacing="0">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <EntranceThemeTransition FromVerticalOffset="20"/>
+                                </TransitionCollection>
+                            </StackPanel.ChildrenTransitions>
+
+                            <!-- Page Title & Header Banner -->
+                            <Grid Padding="4,4,4,12" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE718;" FontSize="32" VerticalAlignment="Center" Margin="0,0,14,0" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="TrayHeaderTitle" Text="Tray Icon Settings" FontSize="20" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="TrayHeaderSubtitle" Text="Customize system notification area tray icons" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- SECTION: ICON MODE -->
+                            <TextBlock x:Name="IconModeSectionTitle" Text="Icon Behavior" FontSize="14" FontWeight="SemiBold" Margin="0,4,0,6"/>
+
+                            <!-- Separate Icons for Light and Dark Modes -->
+                            <Border x:Name="DualIconsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE8B9;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="DualIconsTitleText" Text="Use Separate Icons" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="DualIconsDescText" Text="Display distinct tray icons for Light and Dark modes to indicate current status" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="DualIconsStatusText" Text="On" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="DualIconsToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Tray Icon OSD Toggle Card -->
+                            <Border x:Name="TrayOsdCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE7F4;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="TrayOsdTitleText" Text="Show On-Screen Display (OSD)" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="TrayOsdDescText" Text="Display a floating notification banner when clicking the tray icon" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="TrayOsdStatusText" Text="Off" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="TrayOsdToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: LIGHT / PRIMARY MODE ICON -->
+                            <TextBlock x:Name="LightIconSectionTitle" Text="Light / Primary Mode Icon" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- Light Icon Card -->
+                            <Border x:Name="LightIconCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="LightIconImage" Width="32" Height="32" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="LightIconNameText" Text="sun.ico (Bundled)" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="LightIconPathText" Text="Primary icon representing Light theme mode" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <Button x:Name="BrowseLightIconButton" Grid.Column="2" Content="Browse..." VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Light Presets Card -->
+                            <Border x:Name="LightPresetsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE706;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="LightPresetsTitleText" Text="Light Mode Presets" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="LightPresetsDescText" Text="Quickly choose from built-in or standard Windows light mode icons" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Button x:Name="PresetSunButton" Content="Sun (Bundled)"/>
+                                        <Button x:Name="PresetStarButton" Content="Star"/>
+                                        <Button x:Name="PresetMonitorButton" Content="Monitor"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: DARK MODE ICON (Hidden when separate icons is OFF) -->
+                            <TextBlock x:Name="DarkIconSectionTitle" Text="Dark Mode Icon" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- Dark Icon Card -->
+                            <Border x:Name="DarkIconCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="DarkIconImage" Width="32" Height="32" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="DarkIconNameText" Text="moon.ico (Bundled)" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="DarkIconPathText" Text="Icon representing Dark theme mode" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <Button x:Name="BrowseDarkIconButton" Grid.Column="2" Content="Browse..." VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Dark Presets Card -->
+                            <Border x:Name="DarkPresetsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE708;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="DarkPresetsTitleText" Text="Dark Mode Presets" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="DarkPresetsDescText" Text="Quickly choose from built-in or standard Windows dark mode icons" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <Button x:Name="PresetMoonButton" Content="Moon (Bundled)"/>
+                                        <Button x:Name="PresetCrescentButton" Content="Crescent"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+
+                        <!-- ========================================== -->
+                        <!-- SUBMENU 3: SHORTCUTS                       -->
+                        <!-- ========================================== -->
+                        <StackPanel x:Name="ShortcutsPanel" Visibility="Collapsed" Spacing="0">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <EntranceThemeTransition FromVerticalOffset="20"/>
+                                </TransitionCollection>
+                            </StackPanel.ChildrenTransitions>
+
+                            <!-- Page Title & Header Banner -->
+                            <Grid Padding="4,4,4,12" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE765;" FontSize="32" VerticalAlignment="Center" Margin="0,0,14,0" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="ShortcutsHeaderTitle" Text="Shortcut Settings" FontSize="20" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="ShortcutsHeaderSubtitle" Text="Configure global keyboard shortcuts to toggle theme anywhere" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- SECTION: GLOBAL SHORTCUT -->
+                            <TextBlock x:Name="GlobalShortcutSectionTitle" Text="Global Shortcut" FontSize="14" FontWeight="SemiBold" Margin="0,4,0,6"/>
+
+                            <!-- Enable Hotkey Card -->
+                            <Border x:Name="HotkeyEnableCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE765;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="HotkeyEnableTitleText" Text="Enable Global Shortcut" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="HotkeyEnableDescText" Text="Press a keyboard shortcut combination anytime to toggle theme immediately" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="HotkeyStatusText" Text="Off" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="HotkeyToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Shortcut Key Capture Card (Hidden when hotkey disabled) -->
+                            <Border x:Name="HotkeyCombinationCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE765;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="HotkeyCombinationTitleText" Text="Shortcut Combination" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="HotkeyCombinationDescText" Text="Click the button and press your desired key combination" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <Button x:Name="CaptureHotkeyButton" Grid.Column="2" Content="Ctrl + Alt + T" MinWidth="140" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Hotkey OSD Toggle Card (Hidden when hotkey disabled) -->
+                            <Border x:Name="HotkeyOsdCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE7F4;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="HotkeyOsdTitleText" Text="Show On-Screen Display (OSD)" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="HotkeyOsdDescText" Text="Display a floating notification banner when toggling theme with shortcut" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="HotkeyOsdStatusText" Text="On" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="HotkeyOsdToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: PRESETS (Hidden when hotkey disabled) -->
+                            <TextBlock x:Name="PresetsSectionTitle" Text="Preset Shortcuts" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- Shortcut Presets Card (Hidden when hotkey disabled) -->
+                            <Border x:Name="HotkeyPresetsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE765;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="HotkeyPresetsTitleText" Text="Quick Shortcut Presets" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="HotkeyPresetsDescText" Text="Select one of the standard recommended hotkey combinations" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <VariableSizedWrapGrid Grid.Column="2" Orientation="Horizontal" MaximumRowsOrColumns="2" VerticalAlignment="Center">
+                                        <Button x:Name="PresetHk1Button" Content="Ctrl + Alt + T" Margin="2" MinWidth="110"/>
+                                        <Button x:Name="PresetHk2Button" Content="Win + Shift + D" Margin="2" MinWidth="110"/>
+                                        <Button x:Name="PresetHk3Button" Content="Win + Alt + T" Margin="2" MinWidth="110"/>
+                                        <Button x:Name="PresetHk4Button" Content="Ctrl + Shift + T" Margin="2" MinWidth="110"/>
+                                    </VariableSizedWrapGrid>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+
+                        <!-- ========================================== -->
+                        <!-- SUBMENU 4: SCHEDULE                        -->
+                        <!-- ========================================== -->
+                        <StackPanel x:Name="SchedulePanel" Visibility="Collapsed" Spacing="0">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <EntranceThemeTransition FromVerticalOffset="20"/>
+                                </TransitionCollection>
+                            </StackPanel.ChildrenTransitions>
+
+                            <!-- Page Title & Header Banner -->
+                            <Grid Padding="4,4,4,12" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xEC92;" FontSize="32" VerticalAlignment="Center" Margin="0,0,14,0" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="ScheduleHeaderTitle" Text="Schedule Settings" FontSize="20" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="ScheduleHeaderSubtitle" Text="Automatically transition between Light and Dark themes based on time or solar position" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- SECTION: SCHEDULE MODE -->
+                            <TextBlock x:Name="ScheduleModeSectionTitle" Text="Schedule Mode" FontSize="14" FontWeight="SemiBold" Margin="0,4,0,6"/>
+
+                            <!-- Schedule Mode Card -->
+                            <Border x:Name="ScheduleModeCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEC92;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="ScheduleModeTitleText" Text="Automatic Theme Switching" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="ScheduleModeDescText" Text="Choose whether themes change automatically by custom schedule or solar position" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="ScheduleModeComboBox" Grid.Column="2" Width="220" VerticalAlignment="Center">
+                                        <ComboBoxItem x:Name="ScheduleModeItemDisabled" Content="Disabled (Manual only)" Tag="0"/>
+                                        <ComboBoxItem x:Name="ScheduleModeItemCustom" Content="Custom Time Schedule" Tag="1"/>
+                                        <ComboBoxItem x:Name="ScheduleModeItemSun" Content="Sunrise / Sunset Sync" Tag="2"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+
+                            <!-- Show OSD when auto-switching Toggle (Hidden when schedule is disabled) -->
+                            <Border x:Name="ScheduleShowOsdCard" Visibility="Collapsed" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE7F4;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="ScheduleShowOsdTitleText" Text="Show OSD On Scheduled Switch" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="ScheduleShowOsdDescText" Text="Display the on-screen visual feedback banner when an automatic transition occurs" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="ScheduleShowOsdStatusText" Text="On" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="ScheduleShowOsdToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- SECTION: CUSTOM TIME SCHEDULE (Visible when Mode == Custom) -->
+                            <StackPanel x:Name="CustomScheduleSection" Visibility="Collapsed" Spacing="0">
+                                <TextBlock x:Name="CustomScheduleSectionTitle" Text="Custom Time Schedule" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                                <!-- Light Mode Start Time Card -->
+                                <Border x:Name="ScheduleLightStartCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Glyph="&#xE706;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                            <TextBlock x:Name="ScheduleLightStartTitleText" Text="Light Mode Start Time" FontSize="14" FontWeight="Normal"/>
+                                            <TextBlock x:Name="ScheduleLightStartDescText" Text="Time of day when the system switches to Light Theme" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <TimePicker x:Name="ScheduleLightTimePicker" Grid.Column="2" ClockIdentifier="24HourClock" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Dark Mode Start Time Card -->
+                                <Border x:Name="ScheduleDarkStartCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Glyph="&#xE708;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                            <TextBlock x:Name="ScheduleDarkStartTitleText" Text="Dark Mode Start Time" FontSize="14" FontWeight="Normal"/>
+                                            <TextBlock x:Name="ScheduleDarkStartDescText" Text="Time of day when the system switches to Dark Theme" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <TimePicker x:Name="ScheduleDarkTimePicker" Grid.Column="2" ClockIdentifier="24HourClock" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- SECTION: SUNRISE / SUNSET SYNC (Visible when Mode == Sun) -->
+                            <StackPanel x:Name="SunScheduleSection" Visibility="Collapsed" Spacing="0">
+                                <TextBlock x:Name="SunScheduleSectionTitle" Text="Sunrise / Sunset Sync" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                                <!-- Solar Times Today Preview Card -->
+                                <Border x:Name="SunPreviewCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="4" Padding="16,14,16,14" Margin="0,0,0,4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Glyph="&#xE706;" FontSize="20" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock x:Name="SunPreviewTitleText" Text="Today's Solar Times" FontSize="14" FontWeight="Normal"/>
+                                            <TextBlock x:Name="SunPreviewStatusText" Text="Calculating..." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <Button x:Name="RefreshSunTimesButton" Grid.Column="2" Content="Refresh" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Solar Location Source Method ComboBox Card -->
+                                <Border x:Name="SunSourceCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Glyph="&#xE81D;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                            <TextBlock x:Name="SunSourceTitleText" Text="Solar Location Source" FontSize="14" FontWeight="Normal"/>
+                                            <TextBlock x:Name="SunSourceDescText" Text="Select whether to use Windows Location service or manual geographic coordinates" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <ComboBox x:Name="SunSourceComboBox" Grid.Column="2" Width="220" VerticalAlignment="Center">
+                                            <ComboBoxItem x:Name="SunSourceItemLocationService" Content="Location service" Tag="0"/>
+                                            <ComboBoxItem x:Name="SunSourceItemCoordinates" Content="Geographic coordinates" Tag="1"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </Border>
+
+                                <!-- PANEL 1: Windows Location Service (Visible when Source == 0) -->
+                                <StackPanel x:Name="SunLocationServicePanel" Spacing="0">
+                                    <!-- Location Status InfoBar -->
+                                    <InfoBar x:Name="LocationStatusInfoBar" IsOpen="False" Visibility="Collapsed" IsClosable="True" Margin="0,0,0,4"/>
+
+                                    <!-- Auto-Detect Location Card -->
+                                    <Border x:Name="DetectLocationCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Glyph="&#xE81D;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock x:Name="DetectLocationTitleText" Text="Auto-Detect Location" FontSize="14" FontWeight="Normal"/>
+                                                <TextBlock x:Name="DetectLocationDescText" Text="Detect current geographic coordinates using Windows Location" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                                <TextBlock x:Name="DetectedCoordsText" Text="Coordinates: Detecting..." FontSize="12" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" FontWeight="Medium" Margin="0,3,0,0"/>
+                                            </StackPanel>
+                                            <Button x:Name="DetectLocationButton" Grid.Column="2" VerticalAlignment="Center">
+                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                    <FontIcon Glyph="&#xE81D;" FontSize="13"/>
+                                                    <TextBlock x:Name="DetectLocationBtnText" Text="Detect"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- PANEL 2: Geographic Coordinates & Presets (Visible when Source == 1) -->
+                                <StackPanel x:Name="SunCoordinatesPanel" Spacing="0">
+                                    <!-- Preset Locations Card -->
+                                    <Border x:Name="SunPresetCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Glyph="&#xE707;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock x:Name="SunPresetTitleText" Text="Quick Location Presets" FontSize="14" FontWeight="Normal"/>
+                                                <TextBlock x:Name="SunPresetDescText" Text="Quickly fill coordinates for major regions" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <ComboBox x:Name="LocationPresetComboBox" Grid.Column="2" Width="220" VerticalAlignment="Center" PlaceholderText="Select a city..."/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Latitude Card -->
+                                    <Border x:Name="LatitudeCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Glyph="&#xE709;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock x:Name="LatitudeTitleText" Text="Latitude" FontSize="14" FontWeight="Normal"/>
+                                                <TextBlock x:Name="LatitudeDescText" Text="Geographic coordinate north or south of the equator (-90.0° to 90.0°)" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <NumberBox x:Name="LatitudeNumberBox" Grid.Column="2" Width="120" Minimum="-90" Maximum="90" SmallChange="0.01" SpinButtonPlacementMode="Hidden" VerticalAlignment="Center" PlaceholderText="e.g. 47.4979"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Longitude Card -->
+                                    <Border x:Name="LongitudeCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Glyph="&#xE709;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <TextBlock x:Name="LongitudeTitleText" Text="Longitude" FontSize="14" FontWeight="Normal"/>
+                                                <TextBlock x:Name="LongitudeDescText" Text="Geographic coordinate east or west of the prime meridian (-180.0° to 180.0°)" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <NumberBox x:Name="LongitudeNumberBox" Grid.Column="2" Width="120" Minimum="-180" Maximum="180" SmallChange="0.01" SpinButtonPlacementMode="Hidden" VerticalAlignment="Center" PlaceholderText="e.g. 19.0402"/>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+
+                                <!-- Sunrise Offset Card -->
+                                <Border x:Name="SunriseOffsetCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Glyph="&#xE706;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                            <TextBlock x:Name="SunriseOffsetTitleText" Text="Sunrise Offset (minutes)" FontSize="14" FontWeight="Normal"/>
+                                            <TextBlock x:Name="SunriseOffsetDescText" Text="Shift Light Mode switch earlier (negative) or later (positive) relative to sunrise" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <NumberBox x:Name="SunriseOffsetNumberBox" Grid.Column="2" Width="90" Minimum="-180" Maximum="180" SmallChange="5" LargeChange="15" SpinButtonPlacementMode="Hidden" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Sunset Offset Card -->
+                                <Border x:Name="SunsetOffsetCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <FontIcon Glyph="&#xE708;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                            <TextBlock x:Name="SunsetOffsetTitleText" Text="Sunset Offset (minutes)" FontSize="14" FontWeight="Normal"/>
+                                            <TextBlock x:Name="SunsetOffsetDescText" Text="Shift Dark Mode switch earlier (negative) or later (positive) relative to sunset" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <NumberBox x:Name="SunsetOffsetNumberBox" Grid.Column="2" Width="90" Minimum="-180" Maximum="180" SmallChange="5" LargeChange="15" SpinButtonPlacementMode="Hidden" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+
+                        </StackPanel>
+
+                        <!-- ========================================== -->
+                        <!-- SUBMENU 5: ABOUT                           -->
+                        <!-- ========================================== -->
+                        <StackPanel x:Name="AboutPanel" Visibility="Collapsed" Spacing="0">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection>
+                                    <EntranceThemeTransition FromVerticalOffset="20"/>
+                                </TransitionCollection>
+                            </StackPanel.ChildrenTransitions>
+
+                            <!-- Page Title & Header Banner -->
+                            <Grid Padding="4,4,4,12" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE946;" FontSize="32" VerticalAlignment="Center" Margin="0,0,14,0" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="AboutHeaderTitle" Text="About ClickDarkMode" FontSize="20" FontWeight="SemiBold"/>
+                                    <TextBlock x:Name="AboutHeaderSubtitle" Text="Lightweight, modern Windows 11 theme switching utility" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- App Info Card with Real Application Icon -->
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,14,16,14" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="AboutAppIconImage" Width="48" Height="48" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="ClickDarkMode" FontSize="15" FontWeight="SemiBold"/>
+                                        <TextBlock x:Name="AboutVersionText" Text="Version 1.0.0 (x64 Release)" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock x:Name="AboutAppTypeText" Text="Native WinUI 3 / Windows App SDK 2.6 Desktop Application" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                        <TextBlock Text="Copyright (C) 2026 andris155" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Description Card -->
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,14,16,14" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE946;" FontSize="18" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock x:Name="AboutDescTitleText" Text="Description" FontSize="13" FontWeight="SemiBold"/>
+                                        <TextBlock x:Name="AboutDescContentText" Text="A modern, lightweight Windows 11 utility for instant switching between Light and Dark themes for applications and system surfaces. Supports custom tray icons, accidental-click cooldown, global keyboard shortcuts, and ultra-low background memory footprint." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- License & Open Source Card -->
+                            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,14,16,14" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE8D7;" FontSize="18" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock x:Name="AboutLicenseTitleText" Text="License" FontSize="13" FontWeight="SemiBold"/>
+                                        <TextBlock x:Name="AboutLicenseContentText" Text="Free and Open Source under the MIT License." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+
+                    </Grid>
+                </ScrollViewer>
+            </NavigationView.Content>
+        </NavigationView>
+
+    </Grid>
+</Window>

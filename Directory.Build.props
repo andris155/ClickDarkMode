@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <NugetPackageRoot Condition="'$(NugetPackageRoot)' == ''">$(UserProfile)\.nuget\packages\</NugetPackageRoot>
+  </PropertyGroup>
+</Project>

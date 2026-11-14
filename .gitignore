@@ -1,0 +1,70 @@
+# Visual Studio files & user-specific settings
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+*.opendb
+*.db
+*.aps
+UpgradeLog*.htm
+
+# Build output directories
+bin/
+obj/
+x64/
+ARM64/
+Win32/
+Debug/
+Release/
+Generated Files/
+
+# Compiled binaries & build artifacts
+*.exe
+*.dll
+*.pri
+*.xbf
+*.obj
+*.iobj
+*.ipdb
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.pch
+*.idb
+*.tlog
+*.res
+*.log
+
+# WiX & Installer artifacts
+*.msi
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+*.wixobj
+*.wixpdb
+*.cab
+.wix/
+
+# NuGet packages (restored automatically by MSBuild / packages.config)
+packages/
+!packages.config
+nuget.exe
+
+# Local settings and runtime test files
+ClickBrightness.ini
+settings.ini
+scratch/
+*.bak
+*.tmp
+*.temp
+*.bat
+
+# Windows system files
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
