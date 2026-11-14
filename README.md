@@ -27,9 +27,6 @@
 
 **ClickDarkMode** is a native, ultra-lightweight Windows 11 system tray utility designed to effortlessly switch between **Dark and Light mode** for Applications and the Windows System UI (Taskbar, Start Menu, Shell).
 
-> [!NOTE]
-> **Dark/Light Mode vs. Desktop Themes:** ClickDarkMode switches Windows **Dark Mode and Light Mode** (system & app color modes configured under *Windows Settings > Personalization > Colors*). It does **not** switch Windows desktop themes (`.theme` files, wallpapers, or desktop theme packs).
-
 Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features a modern Windows 11 Fluent Settings interface with Mica backdrops, custom tray icons, global keyboard shortcuts, On-Screen Display (OSD) notification banners, automated scheduling (Custom Times & offline NOAA Solar Sunrise/Sunset calculation).
 
 ---
