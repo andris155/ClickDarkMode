@@ -6,12 +6,6 @@
     Title="ClickDarkMode settings">
 
     <Grid x:Name="RootGrid" Background="Transparent">
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-                <EntranceThemeTransition FromVerticalOffset="28"/>
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -86,12 +80,6 @@
             <NavigationView.Content>
                 <ScrollViewer Padding="24,4,24,16" VerticalScrollBarVisibility="Visible">
                     <Grid x:Name="SubmenuContainer" MaxWidth="680" HorizontalAlignment="Stretch">
-                        <Grid.ChildrenTransitions>
-                            <TransitionCollection>
-                                <EntranceThemeTransition FromVerticalOffset="28"/>
-                            </TransitionCollection>
-                        </Grid.ChildrenTransitions>
-
                         <!-- ========================================== -->
                         <!-- SUBMENU 1: GENERAL                         -->
                         <!-- ========================================== -->
@@ -277,7 +265,7 @@
                                         <TextBlock x:Name="OsdThemeTitleText" Text="OSD Theme" FontSize="14" FontWeight="Normal"/>
                                         <TextBlock x:Name="OsdThemeDescText" Text="Select the color theme for the on-screen display banner" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <ComboBox x:Name="OsdThemeComboBox" Grid.Column="2" Width="210" VerticalAlignment="Center">
+                                    <ComboBox x:Name="OsdThemeComboBox" Grid.Column="2" Width="170" VerticalAlignment="Center">
                                         <ComboBoxItem x:Name="OsdThemeItemFollow" Content="Follow the theme" Tag="0"/>
                                         <ComboBoxItem x:Name="OsdThemeItemDark" Content="Dark" Tag="1"/>
                                         <ComboBoxItem x:Name="OsdThemeItemLight" Content="Light" Tag="2"/>
@@ -388,6 +376,29 @@
                             <!-- SECTION: ICON MODE -->
                             <TextBlock x:Name="IconModeSectionTitle" Text="Icon Behavior" FontSize="14" FontWeight="SemiBold" Margin="0,4,0,6"/>
 
+                            <!-- Tray Icon Mode Card -->
+                            <Border x:Name="TrayIconModeCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="&#xE790;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="TrayIconModeTitleText" Text="Tray Icon" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="TrayIconModeDescText" Text="Select tray icon appearance mode" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="TrayIconModeComboBox" Grid.Column="2" Width="210" VerticalAlignment="Center">
+                                        <ComboBoxItem x:Name="TrayIconModeItemFollow" Content="Follow Windows (system)" Tag="0"/>
+                                        <ComboBoxItem x:Name="TrayIconModeItemCustom" Content="Custom" Tag="1"/>
+                                        <ComboBoxItem x:Name="TrayIconModeItemDisabled" Content="Disabled" Tag="2"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+
                             <!-- Separate Icons for Light and Dark Modes -->
                             <Border x:Name="DualIconsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -426,7 +437,7 @@
                                         <TextBlock x:Name="TrayOsdDescText" Text="Display a floating notification banner when clicking the tray icon" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                        <TextBlock x:Name="TrayOsdStatusText" Text="Off" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <TextBlock x:Name="TrayOsdStatusText" Text="On" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
                                         <ToggleSwitch x:Name="TrayOsdToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                     </StackPanel>
                                 </Grid>
@@ -469,13 +480,13 @@
                                         <TextBlock x:Name="LightPresetsTitleText" Text="Light Mode Presets" FontSize="14" FontWeight="Normal"/>
                                         <TextBlock x:Name="LightPresetsDescText" Text="Quickly choose from built-in or standard Windows light mode icons" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                        <Button x:Name="PresetSunButton" Content="Sun (Bundled)"/>
-                                        <Button x:Name="PresetSunWhiteButton" Content="Sun (White)"/>
-                                        <Button x:Name="PresetSunDarkButton" Content="Sun (Dark)"/>
-                                        <Button x:Name="PresetStarButton" Content="Star"/>
-                                        <Button x:Name="PresetMonitorButton" Content="Monitor"/>
-                                    </StackPanel>
+                                    <ComboBox x:Name="LightPresetComboBox" Grid.Column="2" Width="160" VerticalAlignment="Center" PlaceholderText="Select preset...">
+                                        <ComboBoxItem x:Name="LightPresetItemSun" Content="Sun" Tag="0"/>
+                                        <ComboBoxItem x:Name="LightPresetItemSunWhite" Content="Sun (White)" Tag="1"/>
+                                        <ComboBoxItem x:Name="LightPresetItemSunDark" Content="Sun (Dark)" Tag="2"/>
+                                        <ComboBoxItem x:Name="LightPresetItemStar" Content="Star" Tag="3"/>
+                                        <ComboBoxItem x:Name="LightPresetItemMonitor" Content="Monitor" Tag="4"/>
+                                    </ComboBox>
                                 </Grid>
                             </Border>
 
@@ -516,12 +527,12 @@
                                         <TextBlock x:Name="DarkPresetsTitleText" Text="Dark Mode Presets" FontSize="14" FontWeight="Normal"/>
                                         <TextBlock x:Name="DarkPresetsDescText" Text="Quickly choose from built-in or standard Windows dark mode icons" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                        <Button x:Name="PresetMoonButton" Content="Moon (Bundled)"/>
-                                        <Button x:Name="PresetMoonWhiteButton" Content="Moon (White)"/>
-                                        <Button x:Name="PresetMoonDarkButton" Content="Moon (Dark)"/>
-                                        <Button x:Name="PresetCrescentButton" Content="Crescent"/>
-                                    </StackPanel>
+                                    <ComboBox x:Name="DarkPresetComboBox" Grid.Column="2" Width="160" VerticalAlignment="Center" PlaceholderText="Select preset...">
+                                        <ComboBoxItem x:Name="DarkPresetItemMoon" Content="Moon" Tag="0"/>
+                                        <ComboBoxItem x:Name="DarkPresetItemMoonWhite" Content="Moon (White)" Tag="1"/>
+                                        <ComboBoxItem x:Name="DarkPresetItemMoonDark" Content="Moon (Dark)" Tag="2"/>
+                                        <ComboBoxItem x:Name="DarkPresetItemMonitorDark" Content="Monitor (Dark)" Tag="3"/>
+                                    </ComboBox>
                                 </Grid>
                             </Border>
 
@@ -616,11 +627,8 @@
                                 </Grid>
                             </Border>
 
-                            <!-- SECTION: PRESETS (Hidden when hotkey disabled) -->
-                            <TextBlock x:Name="PresetsSectionTitle" Text="Preset Shortcuts" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
-
-                            <!-- Shortcut Presets Card (Hidden when hotkey disabled) -->
-                            <Border x:Name="HotkeyPresetsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            <!-- Reset Hotkeys Card (Hidden when hotkey disabled) -->
+                            <Border x:Name="ResetHotkeysCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                     BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
                                 <Grid>
@@ -629,17 +637,12 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <FontIcon Glyph="&#xE765;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <FontIcon Glyph="&#xE777;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
-                                        <TextBlock x:Name="HotkeyPresetsTitleText" Text="Quick Shortcut Presets" FontSize="14" FontWeight="Normal"/>
-                                        <TextBlock x:Name="HotkeyPresetsDescText" Text="Select one of the standard recommended hotkey combinations" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        <TextBlock x:Name="ResetShortcutsTitleText" Text="Reset Shortcuts" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="ResetShortcutsDescText" Text="Restore shortcut to default (Ctrl + Alt + T)" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <VariableSizedWrapGrid Grid.Column="2" Orientation="Horizontal" MaximumRowsOrColumns="2" VerticalAlignment="Center">
-                                        <Button x:Name="PresetHk1Button" Content="Ctrl + Alt + T" Margin="2" MinWidth="110"/>
-                                        <Button x:Name="PresetHk2Button" Content="Win + Shift + D" Margin="2" MinWidth="110"/>
-                                        <Button x:Name="PresetHk3Button" Content="Win + Alt + T" Margin="2" MinWidth="110"/>
-                                        <Button x:Name="PresetHk4Button" Content="Ctrl + Shift + T" Margin="2" MinWidth="110"/>
-                                    </VariableSizedWrapGrid>
+                                    <Button x:Name="ResetHotkeysButton" Grid.Column="2" Content="Reset Hotkeys" VerticalAlignment="Center"/>
                                 </Grid>
                             </Border>
 

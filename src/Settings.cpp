@@ -167,6 +167,10 @@ void AppSettings::Load() {
         startWithWindows = regStartup;
     }
 
+    // TrayIconMode
+    trayIconMode = (int)GetPrivateProfileIntW(L"Settings", L"TrayIconMode", 0, ini.c_str());
+    if (trayIconMode < 0 || trayIconMode > 2) trayIconMode = 0;
+
     // DualIcons
     dualIcons = (GetPrivateProfileIntW(L"Settings", L"DualIcons", 1, ini.c_str()) == 1);
 
@@ -187,7 +191,7 @@ void AppSettings::Load() {
 
     // OSD Settings
     osdHotkeyEnabled = (GetPrivateProfileIntW(L"Settings", L"ShowOsdOnHotkey", 1, ini.c_str()) == 1);
-    osdIconClickEnabled = (GetPrivateProfileIntW(L"Settings", L"ShowOsdOnTrayClick", 0, ini.c_str()) == 1);
+    osdIconClickEnabled = (GetPrivateProfileIntW(L"Settings", L"ShowOsdOnTrayClick", 1, ini.c_str()) == 1);
     osdTimeoutMs = (int)GetPrivateProfileIntW(L"Settings", L"OsdTimeoutMs", 2000, ini.c_str());
     if (osdTimeoutMs < 200) osdTimeoutMs = 2000;
     osdTheme = (int)GetPrivateProfileIntW(L"Settings", L"OsdTheme", 0, ini.c_str());
@@ -233,6 +237,7 @@ void AppSettings::Save() {
     WritePrivateProfileStringW(L"Settings", L"Target", target.c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"ToggleDelayMs", std::to_wstring(toggleDelayMs).c_str(), ini.c_str());
 
+    WritePrivateProfileStringW(L"Settings", L"TrayIconMode", std::to_wstring(trayIconMode).c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"DualIcons", dualIcons ? L"1" : L"0", ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"IconFile", iconFile.c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"IconNumber", std::to_wstring(iconNumber).c_str(), ini.c_str());

@@ -34,12 +34,14 @@ namespace winrt::ThemeSwitcherApp::implementation
     {
         InitializeComponent();
         int curSys = ThemeManager::GetState();
-        int nextTarget = (curSys == 0) ? 1 : 0;
-        m_displayedState = nextTarget;
+        m_displayedState = (curSys >= 0) ? curSys : 0;
+        m_displayedTarget = g_Settings.target;
         bool isDark = DetermineOsdIsDark(m_displayedState);
         RootGrid().RequestedTheme(isDark ? winrt::Microsoft::UI::Xaml::ElementTheme::Dark : winrt::Microsoft::UI::Xaml::ElementTheme::Light);
         SetupWindow();
         SetupBackdrop(isDark);
+        UpdateContent(m_displayedState, m_displayedTarget);
+        UpdateTheme(isDark);
 
         // Pre-warm layout and DirectX composition offscreen at startup
         // Pre-scaled to primary monitor DPI to prevent first-hit WM_DPICHANGED / swapchain resize
@@ -363,7 +365,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
             SetWindowPos(m_hwnd, HWND_TOPMOST, targetX, targetY, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW);
             RootGrid().UpdateLayout();
-            SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, 50, NULL);
+            SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, 80, NULL);
             m_isVisible = true;
         }
         else if (posChanged)
@@ -420,14 +422,6 @@ namespace winrt::ThemeSwitcherApp::implementation
                 DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
                 ::ShowWindow(m_hwnd, SW_HIDE);
             }
-
-            // Pre-arm the hidden overlay with the NEXT expected theme
-            // so its swapchain cache is already primed before the next toggle!
-            int nextExpected = m_displayedState ^ 1;
-            m_displayedState = nextExpected;
-            UpdateTheme(DetermineOsdIsDark(nextExpected));
-            UpdateContent(nextExpected, m_displayedTarget);
-            RootGrid().UpdateLayout();
         }
     }
 

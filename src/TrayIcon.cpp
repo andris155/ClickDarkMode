@@ -295,9 +295,6 @@ static void InitTrayMenu() {
         iconSettings.Glyph(L"\xE713");
         s_settingsItem.Icon(iconSettings);
         s_settingsItem.Click([](auto&&, auto&&) {
-            if (s_trayMenuFlyout) {
-                s_trayMenuFlyout.Hide();
-            }
             ShowSettingsWindow();
         });
         s_trayMenuFlyout.Items().Append(s_settingsItem);
@@ -403,10 +400,39 @@ void Remove() {
 void SyncUI() {
     int state = ThemeManager::GetState();
     int effectiveState = (state == -1) ? ThemeManager::ReadRegKey(L"AppsUseLightTheme", 1) : state;
-    bool useDark = g_Settings.dualIcons && (effectiveState == 0);
 
-    std::wstring targetFile = useDark ? g_Settings.darkIconFile : g_Settings.iconFile;
-    int targetNum = useDark ? g_Settings.darkIconNumber : g_Settings.iconNumber;
+    std::wstring targetFile;
+    int targetNum = 1;
+
+    if (g_Settings.trayIconMode == 2) {
+        // Disabled, use the program icon
+        targetFile = L"program.ico";
+        targetNum = 1;
+    } else if (g_Settings.trayIconMode == 0) {
+        // Follow Windows (system)
+        int sysUsesLight = ThemeManager::ReadRegKey(L"SystemUsesLightTheme", 0);
+        if (sysUsesLight == 1) {
+            // Light taskbar: use dark icons
+            if (g_Settings.dualIcons && (effectiveState == 0)) {
+                targetFile = L"moon-dark.ico";
+            } else {
+                targetFile = L"sun-dark.ico";
+            }
+        } else {
+            // Dark taskbar: use light icons
+            if (g_Settings.dualIcons && (effectiveState == 0)) {
+                targetFile = L"moon-white.ico";
+            } else {
+                targetFile = L"sun-white.ico";
+            }
+        }
+        targetNum = 1;
+    } else {
+        // Custom
+        bool useDark = g_Settings.dualIcons && (effectiveState == 0);
+        targetFile = useDark ? g_Settings.darkIconFile : g_Settings.iconFile;
+        targetNum = useDark ? g_Settings.darkIconNumber : g_Settings.iconNumber;
+    }
 
     int cx = GetSystemMetrics(SM_CXSMICON);
     int cy = GetSystemMetrics(SM_CYSMICON);

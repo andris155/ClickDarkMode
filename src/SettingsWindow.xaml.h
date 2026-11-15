@@ -19,6 +19,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         void SetupBackdrop();
         void UpdateThemeStatus();
         void UpdateIconPreviews();
+        void UpdateIconVisibility();
         void UpdateDarkIconVisibility();
         void UpdateHotkeyVisibility();
 
@@ -26,6 +27,9 @@ namespace winrt::ThemeSwitcherApp::implementation
         void StopCapture(bool saveKey);
         void HandleCapturedKey(UINT vkCode, UINT mods);
         void UpdateCaptureHint(UINT mods);
+        void SetExiting(bool exiting) { m_isAppExiting = exiting; }
+        bool IsClosing() const { return m_isClosing; }
+        void SetClosing(bool closing) { m_isClosing = closing; }
 
     private:
         void InitializeControls();
@@ -33,6 +37,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         void UpdateLocalizedStrings();
         void PopulateLanguageList();
         void RefreshComboBoxSelections();
+        void UpdatePresetComboBoxSelections();
         void UpdateTitleBarDragRegions();
         void UpdateTitleBarButtons(bool isDark);
 
@@ -41,6 +46,10 @@ namespace winrt::ThemeSwitcherApp::implementation
         void UpdateDetectedLocationText();
         void PopulateLocationPresets();
         winrt::fire_and_forget DetectLocationAsync();
+
+        void EnsureTrayTabLoaded();
+        void EnsureScheduleTabLoaded();
+        void EnsureAboutTabLoaded();
 
         std::wstring FormatIconLabel(const std::wstring& path, int number);
 
@@ -54,6 +63,12 @@ namespace winrt::ThemeSwitcherApp::implementation
 
         bool m_isCapturing{ false };
         bool m_isUpdatingUI{ false };
+        bool m_isAppExiting{ false };
+        bool m_isClosing{ false };
+        bool m_isInitialized{ false };
+        bool m_trayTabLoaded{ false };
+        bool m_scheduleTabLoaded{ false };
+        bool m_aboutTabLoaded{ false };
 
         winrt::Microsoft::UI::Xaml::Controls::StackPanel m_generalPanel{ nullptr };
         winrt::Microsoft::UI::Xaml::Controls::StackPanel m_trayPanel{ nullptr };

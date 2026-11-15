@@ -13,6 +13,7 @@ struct AppSettings {
     int toggleDelayMs = 500;
     bool startWithWindows = false;
 
+    int trayIconMode = 0;             // 0 = Follow Windows (system) [Default], 1 = Custom, 2 = Disabled (program icon)
     bool dualIcons = true;
     std::wstring iconFile = L"sun.ico";
     int iconNumber = 1;
@@ -23,7 +24,7 @@ struct AppSettings {
     std::wstring hotkey = L"^!t";
 
     bool osdHotkeyEnabled = true;     // Show OSD banner on hotkey toggle (default: true)
-    bool osdIconClickEnabled = false;  // Show OSD banner on tray icon click (default: false)
+    bool osdIconClickEnabled = true;  // Show OSD banner on tray icon click (default: true)
     int osdTimeoutMs = 2000;          // OSD banner duration in ms (default: 2000)
     int osdTheme = 0;                 // 0 = Follow the theme (default), 1 = Dark, 2 = Light
 
