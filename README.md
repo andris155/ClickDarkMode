@@ -36,28 +36,23 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
 ### Settings Window
 *Fluent WinUI 3 configuration interface with Mica backdrop, instant search, custom tray icons, hotkey assignment, and offline solar scheduling.*
 
-<p align="center">
-  <img src="assets/SettingsDarkModepng.png" alt="Settings Window (Dark Mode)" width="49%" />
-  <img src="assets/SettingsLightMode.png" alt="Settings Window (Light Mode)" width="49%" />
-</p>
+| Dark Mode | Light Mode |
+| :---: | :---: |
+| ![Settings Window (Dark Mode)](assets/SettingsDarkModepng.png) | ![Settings Window (Light Mode)](assets/SettingsLightMode.png) |
 
 ### System Tray
 *Direct taskbar switching with mode-adaptive tray icons and native WinUI 3 flyout menu.*
 
-<p align="center">
-  <img src="assets/TrayIconMoon.png" alt="System Tray (Light Mode)" width="280" />
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/TrayIconSun.png" alt="System Tray (Dark Mode)" width="280" />
-</p>
+| Dark Mode | Light Mode |
+| :---: | :---: |
+| ![System Tray (Dark Mode)](assets/TrayIconMoon.png) | ![System Tray (Light Mode)](assets/TrayIconSun.png) |
 
 ### On-Screen Display (OSD)
 *Modern Windows 11 floating banner with smooth animations for real-time mode transitions.*
 
-<p align="center">
-  <img src="assets/OSDDarkMode.png" alt="OSD Banner (Dark Mode)" width="360" />
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/OSDLightMode.png" alt="OSD Banner (Light Mode)" width="360" />
-</p>
+| Dark Mode | Light Mode |
+| :---: | :---: |
+| ![OSD Banner (Dark Mode)](assets/OSDDarkMode.png) | ![OSD Banner (Light Mode)](assets/OSDLightMode.png) |
 
 ---
 
