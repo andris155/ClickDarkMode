@@ -27,11 +27,12 @@
       <Component Id="ApplicationShortcutComponent" Guid="873D8A10-BD56-4F04-8039-3E8682FD4268">
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="ClickDarkMode"
-                  Description="Lightweight modern Windows 11 system tray theme switcher"
+                  Description="Lightweight modern Windows 11 system tray dark and light mode switcher"
                   Target="[INSTALLFOLDER]ClickDarkMode.exe"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon" />
         <RegistryValue Root="HKCU" Key="Software\andris155\ClickDarkMode" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveRegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run" Name="ClickDarkMode" />
       </Component>
     </StandardDirectory>
 
@@ -40,11 +41,19 @@
       <Component Id="ApplicationDesktopShortcutComponent" Guid="38A5DEB0-4B93-4E90-A335-0479D5484ED5" Condition="INSTALLDESKTOPSHORTCUT = 1">
         <Shortcut Id="ApplicationDesktopShortcut"
                   Name="ClickDarkMode"
-                  Description="Lightweight modern Windows 11 system tray theme switcher"
+                  Description="Lightweight modern Windows 11 system tray dark and light mode switcher"
                   Target="[INSTALLFOLDER]ClickDarkMode.exe"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon" />
         <RegistryValue Root="HKCU" Key="Software\andris155\ClickDarkMode" Name="desktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <!-- Clean up any possible startup folder shortcut on uninstall -->
+    <StandardDirectory Id="StartupFolder">
+      <Component Id="CleanupStartupFolderComponent" Guid="72E4FA43-C12B-4813-A5B2-7472A5DA479E">
+        <RegistryValue Root="HKCU" Key="Software\andris155\ClickDarkMode" Name="cleanupStartup" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveFile Id="RemoveStartupShortcut" Name="ClickDarkMode.lnk" On="uninstall" />
       </Component>
     </StandardDirectory>
 
@@ -62,6 +71,7 @@
       <ComponentGroupRef Id="ProductFiles" />
       <ComponentRef Id="ApplicationShortcutComponent" />
       <ComponentRef Id="ApplicationDesktopShortcutComponent" />
+      <ComponentRef Id="CleanupStartupFolderComponent" />
     </Feature>
 
     <UI>
