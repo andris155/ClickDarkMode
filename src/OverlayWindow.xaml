@@ -19,7 +19,7 @@
 
                 <!-- Mode Icon -->
                 <FontIcon x:Name="ModeIcon"
-                          Glyph="&#xE706;"
+                          Glyph=""
                           FontSize="20"
                           Width="20"
                           Height="20"
@@ -29,14 +29,14 @@
                 <!-- Labels -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
                     <TextBlock x:Name="ModeTitleText"
-                               Text="Light Mode"
+                               Text=""
                                FontFamily="Segoe UI Variable Text, Segoe UI"
                                FontSize="14"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"
                                TextTrimming="CharacterEllipsis"/>
                     <TextBlock x:Name="ModeTargetText"
-                               Text="Apps &amp; Windows"
+                               Text=""
                                FontFamily="Segoe UI Variable Text, Segoe UI"
                                FontSize="11"
                                VerticalAlignment="Center"

@@ -1646,9 +1646,9 @@ namespace winrt::ThemeSwitcherApp::implementation
         AboutHeaderTitle().Text(g_Loc.Get(L"About_HeaderTitle", L"About ClickDarkMode"));
         AboutHeaderSubtitle().Text(g_Loc.Get(L"About_HeaderSubtitle", L"Lightweight, modern Windows 11 theme switching utility"));
 #if defined(_M_ARM64)
-        AboutVersionText().Text(L"Version 1.0.0 (ARM64 Release)");
+        AboutVersionText().Text(L"Version 1.0.1 (ARM64 Release)");
 #else
-        AboutVersionText().Text(L"Version 1.0.0 (x64 Release)");
+        AboutVersionText().Text(L"Version 1.0.1 (x64 Release)");
 #endif
         AboutAppTypeText().Text(g_Loc.Get(L"About_AppType", L"Native WinUI 3 / Windows App SDK 2.6 Desktop Application"));
         AboutDescTitleText().Text(g_Loc.Get(L"About_DescTitle", L"Description"));
@@ -2345,7 +2345,7 @@ void TrimProcessWorkingSetAsync()
 {
     std::thread([]()
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(600));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
     }).detach();
 }

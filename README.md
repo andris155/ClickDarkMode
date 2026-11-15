@@ -86,7 +86,7 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
   - Separator
   - **Settings...** (⚙️)
   - Separator
-  - **ClickDarkMode v1.0.0** (ℹ️)
+  - **ClickDarkMode v1.0.1** (ℹ️)
   - **Exit** (⏻)
 
 ### 4. Multi-Architecture Support (x64 & ARM64)
@@ -179,7 +179,7 @@ type nul > bin\x64\Release\portable.txt
 ### 1. Portable ZIP Package (PowerShell)
 You can create a standalone distribution ZIP using PowerShell:
 ```powershell
-Compress-Archive -Path bin\x64\Release\* -DestinationPath bin\ClickDarkMode-1.0.0-x64-portable.zip
+Compress-Archive -Path bin\x64\Release\* -DestinationPath bin\ClickDarkMode-1.0.1-x64-portable.zip
 ```
 *(Ensure `lang\`, `.ico` files, and `portable.txt` are included alongside the executable and runtime libraries).*
 
@@ -196,11 +196,11 @@ To package an installer using WiX v5:
 2. **Build the MSI installer:**
    - **x64:**
      ```cmd
-     wix build installer\Package.wxs -arch x64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -o bin\ClickDarkMode-1.0.0-x64.msi
+     wix build installer\Package.wxs -arch x64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -o bin\ClickDarkMode-1.0.1-x64.msi
      ```
    - **ARM64:**
      ```cmd
-     wix build installer\Package.wxs -arch arm64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -o bin\ClickDarkMode-1.0.0-arm64.msi
+     wix build installer\Package.wxs -arch arm64 -ext WixToolset.UI.wixext -ext WixToolset.Util.wixext -o bin\ClickDarkMode-1.0.1-arm64.msi
      ```
 
 The installer features per-machine installation into `C:\Program Files\ClickDarkMode`, Start Menu and optional Desktop shortcuts, and running-process detection.
