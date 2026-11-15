@@ -3,6 +3,10 @@
 #define IDI_APP_ICON                    101
 #define IDI_ICON_SUN                    102
 #define IDI_ICON_MOON                   103
+#define IDI_ICON_SUN_WHITE              104
+#define IDI_ICON_SUN_DARK               105
+#define IDI_ICON_MOON_WHITE             106
+#define IDI_ICON_MOON_DARK              107
 
 // Tray context menu items
 #define IDM_TRAY_TOGGLE                 1001

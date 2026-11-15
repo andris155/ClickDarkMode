@@ -4,6 +4,10 @@
 IDI_APP_ICON ICON "program.ico"
 IDI_ICON_SUN ICON "sun.ico"
 IDI_ICON_MOON ICON "moon.ico"
+IDI_ICON_SUN_WHITE ICON "sun-white.ico"
+IDI_ICON_SUN_DARK ICON "sun-dark.ico"
+IDI_ICON_MOON_WHITE ICON "moon-white.ico"
+IDI_ICON_MOON_DARK ICON "moon-dark.ico"
 
 // Version Information
 VS_VERSION_INFO VERSIONINFO

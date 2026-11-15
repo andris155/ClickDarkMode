@@ -63,7 +63,7 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
 - Custom draggable title bar with embedded application icon, title, and interactive instant search box (`SettingsSearchBox`).
 - Left-side Fluent `NavigationView` organized into 5 intuitive pages:
   - **General:** Language selection, Application Color Mode (Follow Windows, Dark, Light), Tray Menu Mode, Mica transparency toggle, Mode Switch Target (Both, Apps Only, Windows Only), double-click cooldown delay, OSD banner hide time (Slider + NumberBox, default 2000 ms), Start with Windows toggle (with smart Program Files detection), and factory reset.
-  - **Tray Icon:** Separate Light & Dark icon mode toggle, Show OSD banner on tray click, Light icon picker & presets (Sun, Star, Monitor), Dark icon picker & presets (Moon, Crescent).
+  - **Tray Icon:** Separate Light & Dark icon mode toggle, Show OSD banner on tray click, Light icon picker & presets (Sun Bundled, Sun White, Sun Dark, Star, Monitor), Dark icon picker & presets (Moon Bundled, Moon White, Moon Dark, Crescent).
   - **Shortcuts:** Global keyboard shortcut toggle, interactive key combination capture button, Show OSD banner on hotkey toggle, and quick preset buttons (`Ctrl + Alt + T`, `Win + Shift + D`, `Win + Alt + T`, `Ctrl + Shift + T`).
   - **Schedule:** Automated dark/light mode transitions with 3 modes:
     - *Disabled (Manual only)*

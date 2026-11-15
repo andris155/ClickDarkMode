@@ -471,6 +471,8 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                         <Button x:Name="PresetSunButton" Content="Sun (Bundled)"/>
+                                        <Button x:Name="PresetSunWhiteButton" Content="Sun (White)"/>
+                                        <Button x:Name="PresetSunDarkButton" Content="Sun (Dark)"/>
                                         <Button x:Name="PresetStarButton" Content="Star"/>
                                         <Button x:Name="PresetMonitorButton" Content="Monitor"/>
                                     </StackPanel>
@@ -516,6 +518,8 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                         <Button x:Name="PresetMoonButton" Content="Moon (Bundled)"/>
+                                        <Button x:Name="PresetMoonWhiteButton" Content="Moon (White)"/>
+                                        <Button x:Name="PresetMoonDarkButton" Content="Moon (Dark)"/>
                                         <Button x:Name="PresetCrescentButton" Content="Crescent"/>
                                     </StackPanel>
                                 </Grid>

@@ -80,6 +80,19 @@ static std::wstring ResolvePath(const std::wstring& path) {
     return std::wstring(expanded);
 }
 
+bool IsBundledIcon(const std::wstring& path) {
+    std::wstring pLower = path;
+    std::transform(pLower.begin(), pLower.end(), pLower.begin(), ::towlower);
+    size_t slash = pLower.find_last_of(L"\\/");
+    std::wstring fname = (slash != std::wstring::npos) ? pLower.substr(slash + 1) : pLower;
+    return (fname == L"sun.ico" || fname == L"moon.ico" ||
+            fname == L"sun-white.ico" || fname == L"sun-icon-white.ico" ||
+            fname == L"sun-dark.ico" || fname == L"sun-icon-black.ico" || fname == L"sun-black.ico" ||
+            fname == L"moon-white.ico" || fname == L"moon-icon-white.ico" ||
+            fname == L"moon-dark.ico" || fname == L"moon-icon-black.ico" || fname == L"moon-black.ico" ||
+            fname == L"program.ico");
+}
+
 HICON LoadIconResource(const std::wstring& path, int iconNumber, int cx, int cy) {
     HINSTANCE hInst = GetModuleHandleW(NULL);
 
@@ -92,8 +105,24 @@ HICON LoadIconResource(const std::wstring& path, int iconNumber, int cx, int cy)
         HICON h = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_ICON_SUN), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
         if (h) return h;
     }
+    if (fname == L"sun-white.ico" || fname == L"sun-icon-white.ico" || (path == L"<bundle>" && iconNumber == IDI_ICON_SUN_WHITE)) {
+        HICON h = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_ICON_SUN_WHITE), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
+        if (h) return h;
+    }
+    if (fname == L"sun-dark.ico" || fname == L"sun-icon-black.ico" || fname == L"sun-black.ico" || (path == L"<bundle>" && iconNumber == IDI_ICON_SUN_DARK)) {
+        HICON h = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_ICON_SUN_DARK), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
+        if (h) return h;
+    }
     if (fname == L"moon.ico" || (path == L"<bundle>" && iconNumber == IDI_ICON_MOON)) {
         HICON h = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_ICON_MOON), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
+        if (h) return h;
+    }
+    if (fname == L"moon-white.ico" || fname == L"moon-icon-white.ico" || (path == L"<bundle>" && iconNumber == IDI_ICON_MOON_WHITE)) {
+        HICON h = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_ICON_MOON_WHITE), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
+        if (h) return h;
+    }
+    if (fname == L"moon-dark.ico" || fname == L"moon-icon-black.ico" || fname == L"moon-black.ico" || (path == L"<bundle>" && iconNumber == IDI_ICON_MOON_DARK)) {
+        HICON h = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_ICON_MOON_DARK), IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR);
         if (h) return h;
     }
     if (fname == L"program.ico" || (path == L"<bundle>" && iconNumber == IDI_APP_ICON)) {
@@ -164,7 +193,7 @@ bool PickIcon(HWND hWndParent, std::wstring& inOutFile, int& inOutNumber) {
 
     // Default to %SystemRoot%\System32\SHELL32.dll if bundled or empty
     std::wstring initialFile = inOutFile;
-    if (initialFile == L"sun.ico" || initialFile == L"moon.ico" || initialFile.empty()) {
+    if (IsBundledIcon(initialFile) || initialFile.empty()) {
         wchar_t sysDir[MAX_PATH] = { 0 };
         GetSystemDirectoryW(sysDir, MAX_PATH);
         initialFile = std::wstring(sysDir) + L"\\SHELL32.dll";

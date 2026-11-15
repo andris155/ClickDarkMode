@@ -399,7 +399,11 @@ namespace winrt::ThemeSwitcherApp::implementation
         std::wstring bundledTag = g_Loc.Get(L"Icon_BundledTag", L"(Bundled)");
 
         if (fname == L"sun.ico") return L"sun.ico " + bundledTag;
+        if (fname == L"sun-white.ico" || fname == L"sun-icon-white.ico") return L"sun-white.ico " + bundledTag;
+        if (fname == L"sun-dark.ico" || fname == L"sun-icon-black.ico" || fname == L"sun-black.ico") return L"sun-dark.ico " + bundledTag;
         if (fname == L"moon.ico") return L"moon.ico " + bundledTag;
+        if (fname == L"moon-white.ico" || fname == L"moon-icon-white.ico") return L"moon-white.ico " + bundledTag;
+        if (fname == L"moon-dark.ico" || fname == L"moon-icon-black.ico" || fname == L"moon-black.ico") return L"moon-dark.ico " + bundledTag;
         if (fname == L"program.ico") return L"program.ico " + bundledTag;
 
         // If path is a system DLL, show clean basename
@@ -567,9 +571,9 @@ namespace winrt::ThemeSwitcherApp::implementation
                 { g_Loc.Get(L"Icon_DualCheckbox", L"Use Separate Icons"), catTray, L"dual separate distinct icons külön ikon tálcaikon", L"Tray", DualIconsToggle() },
                 { g_Loc.Get(L"Icon_ShowOsd", L"Show On-Screen Display (OSD)"), catTray, L"tray osd overlay banner floating visual feedback lebegő visszajelzés kijelző", L"Tray", TrayOsdToggle() },
                 { g_Loc.Get(L"Icon_LightGroup", L"Light / Primary Mode Icon"), catTray, L"light icon browse sun világos ikon nap ico választás", L"Tray", BrowseLightIconButton() },
-                { g_Loc.Get(L"Icon_LightPresetsTitle", L"Light Mode Presets"), catTray, L"preset light sun star monitor nap csillag monitor", L"Tray", PresetSunButton() },
+                { g_Loc.Get(L"Icon_LightPresetsTitle", L"Light Mode Presets"), catTray, L"preset light sun white dark star monitor nap fehér sötét csillag monitor", L"Tray", PresetSunButton() },
                 { g_Loc.Get(L"Icon_DarkGroup", L"Dark Mode Icon"), catTray, L"dark icon browse moon sötét ikon hold választás", L"Tray", BrowseDarkIconButton() },
-                { g_Loc.Get(L"Icon_DarkPresetsTitle", L"Dark Mode Presets"), catTray, L"preset dark moon crescent sötét félhold", L"Tray", PresetMoonButton() },
+                { g_Loc.Get(L"Icon_DarkPresetsTitle", L"Dark Mode Presets"), catTray, L"preset dark moon white dark crescent hold fehér sötét félhold", L"Tray", PresetMoonButton() },
 
                 // Shortcuts
                 { g_Loc.Get(L"Hk_EnableCheckbox", L"Enable Global Shortcut"), catSc, L"hotkey shortcut global enable gyorsbillentyű engedélyezés billentyű", L"Shortcuts", HotkeyToggle() },
@@ -940,7 +944,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             std::wstring file = g_Settings.iconFile;
             int num = g_Settings.iconNumber;
-            if (file == L"sun.ico" || file == L"moon.ico" || file.empty())
+            if (TrayIcon::IsBundledIcon(file) || file.empty())
             {
                 wchar_t sysDir[MAX_PATH] = { 0 };
                 GetSystemDirectoryW(sysDir, MAX_PATH);
@@ -961,6 +965,24 @@ namespace winrt::ThemeSwitcherApp::implementation
         PresetSunButton().Click([this](auto&&, auto&&)
         {
             g_Settings.iconFile = L"sun.ico";
+            g_Settings.iconNumber = 1;
+            g_Settings.Save();
+            UpdateIconPreviews();
+            TrayIcon::SyncUI();
+        });
+
+        PresetSunWhiteButton().Click([this](auto&&, auto&&)
+        {
+            g_Settings.iconFile = L"sun-white.ico";
+            g_Settings.iconNumber = 1;
+            g_Settings.Save();
+            UpdateIconPreviews();
+            TrayIcon::SyncUI();
+        });
+
+        PresetSunDarkButton().Click([this](auto&&, auto&&)
+        {
+            g_Settings.iconFile = L"sun-dark.ico";
             g_Settings.iconNumber = 1;
             g_Settings.Save();
             UpdateIconPreviews();
@@ -994,7 +1016,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             std::wstring file = g_Settings.darkIconFile;
             int num = g_Settings.darkIconNumber;
-            if (file == L"sun.ico" || file == L"moon.ico" || file.empty())
+            if (TrayIcon::IsBundledIcon(file) || file.empty())
             {
                 wchar_t sysDir[MAX_PATH] = { 0 };
                 GetSystemDirectoryW(sysDir, MAX_PATH);
@@ -1015,6 +1037,24 @@ namespace winrt::ThemeSwitcherApp::implementation
         PresetMoonButton().Click([this](auto&&, auto&&)
         {
             g_Settings.darkIconFile = L"moon.ico";
+            g_Settings.darkIconNumber = 1;
+            g_Settings.Save();
+            UpdateIconPreviews();
+            TrayIcon::SyncUI();
+        });
+
+        PresetMoonWhiteButton().Click([this](auto&&, auto&&)
+        {
+            g_Settings.darkIconFile = L"moon-white.ico";
+            g_Settings.darkIconNumber = 1;
+            g_Settings.Save();
+            UpdateIconPreviews();
+            TrayIcon::SyncUI();
+        });
+
+        PresetMoonDarkButton().Click([this](auto&&, auto&&)
+        {
+            g_Settings.darkIconFile = L"moon-dark.ico";
             g_Settings.darkIconNumber = 1;
             g_Settings.Save();
             UpdateIconPreviews();
@@ -1406,6 +1446,8 @@ namespace winrt::ThemeSwitcherApp::implementation
         LightPresetsTitleText().Text(g_Loc.Get(L"Icon_LightPresetsTitle", L"Light Mode Presets"));
         LightPresetsDescText().Text(g_Loc.Get(L"Icon_LightPresetsDesc", L"Quickly choose from built-in or standard Windows light mode icons"));
         PresetSunButton().Content(winrt::box_value(g_Loc.Get(L"Icon_SunBundled", L"Sun (Bundled)")));
+        PresetSunWhiteButton().Content(winrt::box_value(g_Loc.Get(L"Icon_SunWhite", L"Sun (White)")));
+        PresetSunDarkButton().Content(winrt::box_value(g_Loc.Get(L"Icon_SunDark", L"Sun (Dark)")));
         PresetStarButton().Content(winrt::box_value(g_Loc.Get(L"Icon_Star", L"Star")));
         PresetMonitorButton().Content(winrt::box_value(g_Loc.Get(L"Icon_Monitor", L"Monitor")));
 
@@ -1415,6 +1457,8 @@ namespace winrt::ThemeSwitcherApp::implementation
         DarkPresetsTitleText().Text(g_Loc.Get(L"Icon_DarkPresetsTitle", L"Dark Mode Presets"));
         DarkPresetsDescText().Text(g_Loc.Get(L"Icon_DarkPresetsDesc", L"Quickly choose from built-in or standard Windows dark mode icons"));
         PresetMoonButton().Content(winrt::box_value(g_Loc.Get(L"Icon_MoonBundled", L"Moon (Bundled)")));
+        PresetMoonWhiteButton().Content(winrt::box_value(g_Loc.Get(L"Icon_MoonWhite", L"Moon (White)")));
+        PresetMoonDarkButton().Content(winrt::box_value(g_Loc.Get(L"Icon_MoonDark", L"Moon (Dark)")));
         PresetCrescentButton().Content(winrt::box_value(g_Loc.Get(L"Icon_Crescent", L"Crescent")));
 
         ShortcutsHeaderTitle().Text(g_Loc.Get(L"Hk_HeaderTitle", L"Shortcut Settings"));
