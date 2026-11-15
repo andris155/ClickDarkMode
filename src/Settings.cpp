@@ -191,7 +191,7 @@ void AppSettings::Load() {
 
     // OSD Settings
     osdHotkeyEnabled = (GetPrivateProfileIntW(L"Settings", L"ShowOsdOnHotkey", 1, ini.c_str()) == 1);
-    osdIconClickEnabled = (GetPrivateProfileIntW(L"Settings", L"ShowOsdOnTrayClick", 1, ini.c_str()) == 1);
+    osdIconClickEnabled = (GetPrivateProfileIntW(L"Settings", L"ShowOsdOnTrayClick", 0, ini.c_str()) == 1);
     osdTimeoutMs = (int)GetPrivateProfileIntW(L"Settings", L"OsdTimeoutMs", 2000, ini.c_str());
     if (osdTimeoutMs < 200) osdTimeoutMs = 2000;
     osdTheme = (int)GetPrivateProfileIntW(L"Settings", L"OsdTheme", 0, ini.c_str());

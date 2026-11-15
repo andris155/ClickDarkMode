@@ -14,6 +14,8 @@ public:
     void Hide();
     void Destroy();
     void ResetGraphicsResources();
+    void PreArm(int nextExpectedState, const std::wstring& target);
+    void SyncWithSystem();
 };
 
 extern OverlayWindow g_OverlayWindow;

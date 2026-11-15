@@ -34,7 +34,8 @@ namespace winrt::ThemeSwitcherApp::implementation
     {
         InitializeComponent();
         int curSys = ThemeManager::GetState();
-        m_displayedState = (curSys >= 0) ? curSys : 0;
+        int nextTarget = (curSys == 0) ? 1 : 0;
+        m_displayedState = nextTarget;
         m_displayedTarget = g_Settings.target;
         bool isDark = DetermineOsdIsDark(m_displayedState);
         RootGrid().RequestedTheme(isDark ? winrt::Microsoft::UI::Xaml::ElementTheme::Dark : winrt::Microsoft::UI::Xaml::ElementTheme::Light);
@@ -326,7 +327,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         }
     }
 
-    void OverlayWindow::PositionWindow()
+    void OverlayWindow::PositionWindow(bool waitExtra)
     {
         if (!m_hwnd || !m_appWindow) return;
 
@@ -365,7 +366,8 @@ namespace winrt::ThemeSwitcherApp::implementation
             DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
             SetWindowPos(m_hwnd, HWND_TOPMOST, targetX, targetY, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW);
             RootGrid().UpdateLayout();
-            SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, 80, NULL);
+            UINT uncloakDelay = waitExtra ? 120 : 40;
+            SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, uncloakDelay, NULL);
             m_isVisible = true;
         }
         else if (posChanged)
@@ -376,13 +378,22 @@ namespace winrt::ThemeSwitcherApp::implementation
 
     void OverlayWindow::Show(int themeState, const std::wstring& target)
     {
+        bool targetIsDark = DetermineOsdIsDark(themeState);
+        bool currentIsDark = DetermineOsdIsDark(m_displayedState);
+        bool themeMismatch = (targetIsDark != currentIsDark);
+
         m_displayedState = themeState;
         m_displayedTarget = target;
 
-        bool isDark = DetermineOsdIsDark(themeState);
-        UpdateTheme(isDark);
+        if (themeMismatch)
+        {
+            DetachBackdrop();
+            SetupBackdrop(targetIsDark);
+        }
+
+        UpdateTheme(targetIsDark);
         UpdateContent(themeState, target);
-        PositionWindow();
+        PositionWindow(themeMismatch);
 
         if (m_backdropConfig)
         {
@@ -400,6 +411,28 @@ namespace winrt::ThemeSwitcherApp::implementation
             KillTimer(m_hwnd, IDT_OVERLAY_HIDE);
             SetTimer(m_hwnd, IDT_OVERLAY_HIDE, timeout, NULL);
         }
+    }
+
+    void OverlayWindow::PreArm(int nextExpectedState, const std::wstring& target)
+    {
+        if (m_isVisible) return; // Never touch overlay if currently showing on screen
+        m_displayedState = nextExpectedState;
+        m_displayedTarget = target;
+        bool isDark = DetermineOsdIsDark(nextExpectedState);
+        UpdateTheme(isDark);
+        UpdateContent(nextExpectedState, target);
+        if (m_hwnd)
+        {
+            RootGrid().UpdateLayout();
+        }
+    }
+
+    void OverlayWindow::SyncWithSystem()
+    {
+        if (m_isVisible) return;
+        int curSys = ThemeManager::GetState();
+        int nextExpected = (curSys == 0) ? 1 : 0;
+        PreArm(nextExpected, g_Settings.target);
     }
 
     void OverlayWindow::HideWindow()
@@ -422,6 +455,11 @@ namespace winrt::ThemeSwitcherApp::implementation
                 DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
                 ::ShowWindow(m_hwnd, SW_HIDE);
             }
+
+            // Pre-arm the hidden overlay with the NEXT expected theme
+            // so its swapchain cache is already primed before the next toggle!
+            int nextExpected = m_displayedState ^ 1;
+            PreArm(nextExpected, m_displayedTarget);
         }
     }
 

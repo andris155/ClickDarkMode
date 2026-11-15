@@ -62,6 +62,8 @@ void SetState(int targetState, bool showOsd) {
 
     if (showOsd) {
         g_OverlayWindow.Show(targetState, g_Settings.target);
+    } else {
+        g_OverlayWindow.PreArm(targetState ^ 1, g_Settings.target);
     }
 
     if (g_Settings.target == L"Apps" || g_Settings.target == L"Both") {
@@ -172,6 +174,7 @@ void OnSettingChange(LPARAM lParam) {
     if (shouldSync) {
         TrayIcon::SyncUI();
         OnSettingsThemeChanged();
+        g_OverlayWindow.SyncWithSystem();
     }
 }
 

@@ -905,6 +905,7 @@ namespace winrt::ThemeSwitcherApp::implementation
                 g_Settings.Save();
                 UpdateThemeStatus();
                 TrayIcon::SyncUI();
+                g_OverlayWindow.SyncWithSystem();
             }
         });
 
@@ -942,6 +943,7 @@ namespace winrt::ThemeSwitcherApp::implementation
                 try { g_Settings.osdTheme = std::stoi(tag.c_str()); } catch (...) { g_Settings.osdTheme = 0; }
                 g_Settings.Save();
                 g_OverlayWindow.ResetGraphicsResources();
+                g_OverlayWindow.SyncWithSystem();
             }
         });
 
@@ -1007,7 +1009,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.hotkeyEnabled = false;
             g_Settings.hotkey = L"^!t";
             g_Settings.osdHotkeyEnabled = true;
-            g_Settings.osdIconClickEnabled = true;
+            g_Settings.osdIconClickEnabled = false;
             g_Settings.osdTimeoutMs = 2000;
             g_Settings.osdTheme = 0;
             g_Settings.scheduleMode = 0;
@@ -1034,6 +1036,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             SetupBackdrop();
             TrayIcon::SyncUI();
             g_OverlayWindow.ResetGraphicsResources();
+            g_OverlayWindow.SyncWithSystem();
             if (m_hwnd) HotkeyManager::Register(m_hwnd);
             TrimProcessWorkingSetAsync();
         });
@@ -1071,6 +1074,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.osdIconClickEnabled = TrayOsdToggle().IsOn();
             TrayOsdStatusText().Text(g_Loc.Get(g_Settings.osdIconClickEnabled ? L"Common_On" : L"Common_Off", g_Settings.osdIconClickEnabled ? L"On" : L"Off").c_str());
             g_Settings.Save();
+            g_OverlayWindow.SyncWithSystem();
         });
 
         // Browse Light Icon (defaults to %SystemRoot%\System32\SHELL32.dll if bundled or empty)
@@ -1220,6 +1224,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.osdHotkeyEnabled = HotkeyOsdToggle().IsOn();
             HotkeyOsdStatusText().Text(g_Loc.Get(g_Settings.osdHotkeyEnabled ? L"Common_On" : L"Common_Off", g_Settings.osdHotkeyEnabled ? L"On" : L"Off").c_str());
             g_Settings.Save();
+            g_OverlayWindow.SyncWithSystem();
         });
 
         // Hotkey Capture Button
@@ -1267,6 +1272,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.scheduleShowOsd = ScheduleShowOsdToggle().IsOn();
             ScheduleShowOsdStatusText().Text(g_Loc.Get(g_Settings.scheduleShowOsd ? L"Common_On" : L"Common_Off", g_Settings.scheduleShowOsd ? L"On" : L"Off").c_str());
             g_Settings.Save();
+            g_OverlayWindow.SyncWithSystem();
         });
 
         // Custom Schedule TimePickers

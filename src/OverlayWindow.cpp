@@ -47,8 +47,25 @@ void OverlayWindow::Show(int themeState, const std::wstring& target)
 
 void OverlayWindow::OnThemeChanged()
 {
-    // The overlay theme strictly matches the target theme being shifted to (m_displayedState),
-    // and does not follow the Windows system setting.
+    SyncWithSystem();
+}
+
+void OverlayWindow::PreArm(int nextExpectedState, const std::wstring& target)
+{
+    if (s_overlayWindow)
+    {
+        auto p = winrt::get_self<winrt::ThemeSwitcherApp::implementation::OverlayWindow>(s_overlayWindow);
+        if (p) p->PreArm(nextExpectedState, target);
+    }
+}
+
+void OverlayWindow::SyncWithSystem()
+{
+    if (s_overlayWindow)
+    {
+        auto p = winrt::get_self<winrt::ThemeSwitcherApp::implementation::OverlayWindow>(s_overlayWindow);
+        if (p) p->SyncWithSystem();
+    }
 }
 
 void OverlayWindow::Hide()
