@@ -432,6 +432,19 @@ namespace winrt::ThemeSwitcherApp::implementation
         }
         DarkIconNameText().Text(FormatIconLabel(g_Settings.darkIconFile, g_Settings.darkIconNumber).c_str());
 
+        // Title bar app icon
+        HICON hTitle = TrayIcon::LoadIconResource(L"program.ico", 1, 32, 32);
+        if (!hTitle && m_hIconSmall)
+        {
+            hTitle = CopyIcon(m_hIconSmall);
+        }
+        if (hTitle)
+        {
+            auto wbTitle = HIconToWriteableBitmap(hTitle, 32, 32);
+            if (wbTitle) AppTitleBarIcon().Source(wbTitle);
+            DestroyIcon(hTitle);
+        }
+
         // About page app icon
         HICON hApp = TrayIcon::LoadIconResource(L"program.ico", 1, 48, 48);
         if (hApp)

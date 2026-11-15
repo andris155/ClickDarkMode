@@ -27,8 +27,8 @@
 
             <!-- Left App Title & Icon -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10" Padding="16,0,16,0" IsHitTestVisible="False">
-                <FontIcon Glyph="&#xE790;" FontSize="18" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}"/>
-                <TextBlock x:Name="AppTitleBarText" Text="ClickDarkMode Settings" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                <Image x:Name="AppTitleBarIcon" Width="18" Height="18" VerticalAlignment="Center"/>
+                <TextBlock x:Name="AppTitleBarText" Text="ClickDarkMode Settings" FontSize="13" FontWeight="Normal" VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- Centered Search Box -->
