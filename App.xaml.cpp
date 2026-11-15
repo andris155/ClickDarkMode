@@ -111,6 +111,12 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             break;
         }
 
+        case WM_CLOSE:
+        {
+            ExitApp();
+            return 0;
+        }
+
         case WM_DESTROY:
         {
             ScheduleManager::Uninit();
