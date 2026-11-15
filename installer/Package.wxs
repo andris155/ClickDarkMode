@@ -19,6 +19,19 @@
 
     <util:CloseApplication Target="ClickDarkMode.exe" CloseMessage="yes" Description="ClickDarkMode is currently running. Please close it before continuing." RebootPrompt="no" />
 
+    <StandardDirectory Id="SystemFolder" />
+
+    <!-- Clean up startup registry entry on uninstall -->
+    <CustomAction Id="CleanupStartupRun"
+                  Directory="SystemFolder"
+                  ExeCommand="reg.exe delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v ClickDarkMode /f"
+                  Execute="immediate"
+                  Return="ignore" />
+
+    <InstallExecuteSequence>
+      <Custom Action="CleanupStartupRun" Before="InstallFinalize" Condition="(NOT UPGRADINGPRODUCTCODE) AND (REMOVE=&quot;ALL&quot;)" />
+    </InstallExecuteSequence>
+
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="INSTALLFOLDER" Name="ClickDarkMode" />
     </StandardDirectory>
@@ -32,7 +45,7 @@
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon" />
         <RegistryValue Root="HKCU" Key="Software\andris155\ClickDarkMode" Name="installed" Type="integer" Value="1" KeyPath="yes" />
-        <RemoveRegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Run" Name="ClickDarkMode" />
+        <RemoveRegistryKey Root="HKCU" Key="Software\andris155\ClickDarkMode" Action="removeOnUninstall" />
       </Component>
     </StandardDirectory>
 
@@ -46,14 +59,6 @@
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon" />
         <RegistryValue Root="HKCU" Key="Software\andris155\ClickDarkMode" Name="desktopShortcut" Type="integer" Value="1" KeyPath="yes" />
-      </Component>
-    </StandardDirectory>
-
-    <!-- Clean up any possible startup folder shortcut on uninstall -->
-    <StandardDirectory Id="StartupFolder">
-      <Component Id="CleanupStartupFolderComponent" Guid="72E4FA43-C12B-4813-A5B2-7472A5DA479E">
-        <RegistryValue Root="HKCU" Key="Software\andris155\ClickDarkMode" Name="cleanupStartup" Type="integer" Value="1" KeyPath="yes" />
-        <RemoveFile Id="RemoveStartupShortcut" Name="ClickDarkMode.lnk" On="uninstall" />
       </Component>
     </StandardDirectory>
 
@@ -71,7 +76,6 @@
       <ComponentGroupRef Id="ProductFiles" />
       <ComponentRef Id="ApplicationShortcutComponent" />
       <ComponentRef Id="ApplicationDesktopShortcutComponent" />
-      <ComponentRef Id="CleanupStartupFolderComponent" />
     </Feature>
 
     <UI>
