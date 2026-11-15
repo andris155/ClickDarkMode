@@ -39,7 +39,7 @@ std::wstring LocalizationManager::GetWindowsDisplayLanguage() const {
 
 void LocalizationManager::LoadBuiltInDefaults() {
     m_fallbackStrings = {
-        { L"App_Title", L"ClickDarkMode Settings" },
+        { L"App_Title", L"ClickDarkMode settings" },
         { L"Lang_FollowWindows", L"Follow Windows" },
         { L"Search_Placeholder", L"Search settings" },
         { L"Search_NoResults", L"No results found" },

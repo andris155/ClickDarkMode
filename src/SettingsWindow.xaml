@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:ThemeSwitcherApp"
-    Title="ClickDarkMode Settings">
+    Title="ClickDarkMode settings">
 
     <Grid x:Name="RootGrid" Background="Transparent">
         <Grid.ChildrenTransitions>
@@ -28,7 +28,7 @@
             <!-- Left App Title & Icon -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10" Padding="16,0,16,0" IsHitTestVisible="False">
                 <Image x:Name="AppTitleBarIcon" Width="18" Height="18" VerticalAlignment="Center"/>
-                <TextBlock x:Name="AppTitleBarText" Text="ClickDarkMode Settings" FontSize="13" FontWeight="Normal" VerticalAlignment="Center"/>
+                <TextBlock x:Name="AppTitleBarText" Text="ClickDarkMode settings" FontSize="13" FontWeight="Normal" VerticalAlignment="Center"/>
             </StackPanel>
 
             <!-- Centered Search Box -->

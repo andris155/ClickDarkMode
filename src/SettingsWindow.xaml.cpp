@@ -231,8 +231,8 @@ namespace winrt::ThemeSwitcherApp::implementation
 
             if (m_appWindow)
             {
-                m_appWindow.Title(L"ClickDarkMode Settings");
-                SetWindowTextW(m_hwnd, L"ClickDarkMode Settings");
+                m_appWindow.Title(L"ClickDarkMode settings");
+                SetWindowTextW(m_hwnd, L"ClickDarkMode settings");
 
                 wchar_t exePath[MAX_PATH] = {};
                 GetModuleFileNameW(NULL, exePath, MAX_PATH);
@@ -1323,9 +1323,9 @@ namespace winrt::ThemeSwitcherApp::implementation
 
     void SettingsWindow::UpdateLocalizedStrings()
     {
-        AppTitleBarText().Text(g_Loc.Get(L"App_Title", L"ClickDarkMode Settings"));
-        m_appWindow.Title(g_Loc.Get(L"App_Title", L"ClickDarkMode Settings"));
-        if (m_hwnd) SetWindowTextW(m_hwnd, g_Loc.Get(L"App_Title", L"ClickDarkMode Settings").c_str());
+        AppTitleBarText().Text(g_Loc.Get(L"App_Title", L"ClickDarkMode settings"));
+        m_appWindow.Title(g_Loc.Get(L"App_Title", L"ClickDarkMode settings"));
+        if (m_hwnd) SetWindowTextW(m_hwnd, g_Loc.Get(L"App_Title", L"ClickDarkMode settings").c_str());
         SettingsSearchBox().PlaceholderText(g_Loc.Get(L"Search_Placeholder", L"Search settings"));
 
         NavItemGeneral().Content(winrt::box_value(g_Loc.Get(L"Tab_General", L"General")));
