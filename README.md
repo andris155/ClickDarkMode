@@ -87,7 +87,7 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
   - **Settings...** (⚙️)
   - Separator
   - **ClickDarkMode v1.0.1** (ℹ️)
-  - **Exit** (⏻)
+  - **Exit** (❌)
 
 ### 4. Multi-Architecture Support (x64 & ARM64)
 - Native 64-bit Intel/AMD (`x64`) build.
