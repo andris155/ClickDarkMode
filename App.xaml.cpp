@@ -318,13 +318,19 @@ namespace winrt::ThemeSwitcherApp::implementation
                 }
             });
 
-            // Check command line for --settings / -s
+            // Check command line for --settings / -s or --toggle / -t
             LPWSTR cmdLine = GetCommandLineW();
             bool openSettings = (cmdLine && (wcsstr(cmdLine, L"--settings") || wcsstr(cmdLine, L"-s")));
+            bool toggleImmediate = (cmdLine && (wcsstr(cmdLine, L"--toggle") || wcsstr(cmdLine, L"-t")));
 
             if (openSettings)
             {
                 ShowSettingsWindow();
+            }
+            else if (toggleImmediate)
+            {
+                ThemeManager::Toggle();
+                TrimProcessWorkingSetAsync();
             }
             else
             {

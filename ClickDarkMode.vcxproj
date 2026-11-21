@@ -42,7 +42,7 @@
     <WindowsPackageType>None</WindowsPackageType>
     <AppContainerApplication>false</AppContainerApplication>
     <AppxPackage>false</AppxPackage>
-    <ImplicitlyExpandTargetPlatform>true</ImplicitlyExpandTargetPlatform>
+    <ImplicitlyExpandTargetPlatform>false</ImplicitlyExpandTargetPlatform>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
