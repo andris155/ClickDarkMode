@@ -203,8 +203,14 @@ namespace winrt::ThemeSwitcherApp::implementation
             SetWindowSubclass(m_hwnd, SubclassProc, 1, reinterpret_cast<DWORD_PTR>(this));
 
             HINSTANCE hInst = GetModuleHandleW(NULL);
-            m_hIconBig = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
-            m_hIconSmall = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+            UINT winDpi = GetDpiForWindow(m_hwnd);
+            if (winDpi == 0) winDpi = 96;
+            int cxIcon = GetSystemMetricsForDpi(SM_CXICON, winDpi);
+            int cyIcon = GetSystemMetricsForDpi(SM_CYICON, winDpi);
+            int cxSmIcon = GetSystemMetricsForDpi(SM_CXSMICON, winDpi);
+            int cySmIcon = GetSystemMetricsForDpi(SM_CYSMICON, winDpi);
+            m_hIconBig = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, cxIcon, cyIcon, LR_DEFAULTCOLOR);
+            m_hIconSmall = (HICON)LoadImageW(hInst, MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, cxSmIcon, cySmIcon, LR_DEFAULTCOLOR);
 
             if (m_hIconBig)
             {
@@ -263,7 +269,7 @@ namespace winrt::ThemeSwitcherApp::implementation
                 {
                     try
                     {
-                        HICON hBest = m_hIconSmall ? m_hIconSmall : m_hIconBig;
+                        HICON hBest = m_hIconBig ? m_hIconBig : m_hIconSmall;
                         m_appWindow.SetIcon(winrt::Microsoft::UI::GetIconIdFromIcon(hBest));
                     }
                     catch (...)
@@ -564,22 +570,29 @@ namespace winrt::ThemeSwitcherApp::implementation
 
     void SettingsWindow::InitializeControls()
     {
-        // Load actual program icon for TitleBar (matches ClickBrightness)
+        // Load actual high-resolution program icon for TitleBar (supersampled to prevent pixelation)
         try
         {
-            HICON hTitleIcon = (HICON)::LoadImageW(::GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
-            bool destroyTitleIcon = false;
+            HICON hTitleIcon = (HICON)::LoadImageW(::GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, 48, 48, LR_DEFAULTCOLOR);
+            bool destroyTitleIcon = (hTitleIcon != NULL);
+            if (!hTitleIcon)
+            {
+                hTitleIcon = (HICON)::LoadImageW(::GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR);
+                destroyTitleIcon = (hTitleIcon != NULL);
+            }
+            if (!hTitleIcon && m_hIconBig)
+            {
+                hTitleIcon = m_hIconBig;
+                destroyTitleIcon = false;
+            }
             if (!hTitleIcon && m_hIconSmall)
             {
                 hTitleIcon = m_hIconSmall;
+                destroyTitleIcon = false;
             }
             if (hTitleIcon)
             {
-                UINT dpi = m_hwnd ? GetDpiForWindow(m_hwnd) : 96;
-                if (dpi == 0) dpi = 96;
-                int smIconSize = ::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
-                if (smIconSize <= 0) smIconSize = 16;
-                auto wbTitle = HIconToWriteableBitmap(hTitleIcon, smIconSize, smIconSize);
+                auto wbTitle = HIconToWriteableBitmap(hTitleIcon, 48, 48);
                 if (wbTitle)
                 {
                     AppTitleBarIcon().Source(wbTitle);
