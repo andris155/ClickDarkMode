@@ -8,6 +8,7 @@ namespace HotkeyManager {
 
 static std::wstring s_activeHotkeyStr = L"";
 static bool s_isRegistered = false;
+static HWND s_hBoundWnd = NULL;
 
 std::wstring GetKeyDisplayName(UINT vk) {
     if (vk >= 'A' && vk <= 'Z') {
@@ -180,7 +181,14 @@ std::wstring FormatPreview(bool useWin, const std::wstring& baseHk) {
 }
 
 bool Register(HWND hWnd) {
-    Unregister(hWnd);
+    if (hWnd) s_hBoundWnd = hWnd;
+    if (!s_hBoundWnd) {
+        s_hBoundWnd = FindWindowW(L"ClickDarkMode_MessageWndClass", NULL);
+    }
+    HWND target = s_hBoundWnd;
+    if (!target) return false;
+
+    Unregister(target);
 
     if (!g_Settings.hotkeyEnabled || g_Settings.hotkey.empty()) {
         return false;
@@ -191,9 +199,9 @@ bool Register(HWND hWnd) {
         return false;
     }
 
-    BOOL res = RegisterHotKey(hWnd, ID_HOTKEY_TOGGLE, hk.fsModifiers | MOD_NOREPEAT, hk.vk);
+    BOOL res = RegisterHotKey(target, ID_HOTKEY_TOGGLE, hk.fsModifiers | MOD_NOREPEAT, hk.vk);
     if (!res) {
-        res = RegisterHotKey(hWnd, ID_HOTKEY_TOGGLE, hk.fsModifiers, hk.vk);
+        res = RegisterHotKey(target, ID_HOTKEY_TOGGLE, hk.fsModifiers, hk.vk);
     }
 
     if (res) {
@@ -205,8 +213,12 @@ bool Register(HWND hWnd) {
 }
 
 void Unregister(HWND hWnd) {
-    if (s_isRegistered) {
-        UnregisterHotKey(hWnd, ID_HOTKEY_TOGGLE);
+    HWND target = hWnd ? hWnd : s_hBoundWnd;
+    if (!target) {
+        target = FindWindowW(L"ClickDarkMode_MessageWndClass", NULL);
+    }
+    if (s_isRegistered && target) {
+        UnregisterHotKey(target, ID_HOTKEY_TOGGLE);
         s_isRegistered = false;
         s_activeHotkeyStr = L"";
     }

@@ -101,6 +101,20 @@ Built with **C++20 / C++/WinRT** and **WinUI 3** (Windows App SDK), it features 
 - When running from a portable folder (or when `portable.txt` is present), settings (`settings.ini`) are stored directly in the application folder rather than in `%LocalAppData%`.
 - Automatically prevents broken autorun registry entries when running portably; *Start with Windows* is safely enabled when installed in `Program Files`.
 
+### 7. Command-Line Interface (CLI)
+ClickDarkMode supports deterministic command-line switches for scripting, automation, Stream Deck buttons, and Task Scheduler:
+
+| Option | Shorthand | Description |
+| :--- | :--- | :--- |
+| `--dark` | `-d` | Switch explicitly to Dark Mode |
+| `--light` | `-l` | Switch explicitly to Light Mode |
+| `--toggle` | `-t` | Toggle between Dark and Light Mode |
+| `--settings` | `-s` | Open the Settings window |
+| `--exit` | `-e` | Close any running ClickDarkMode instance |
+| `--help` | `-h`, `/?` | Display command-line usage dialog |
+
+*All commands work both from a cold start (launching the utility into the tray) and while already running (signaled via low-latency inter-process communication).*
+
 ---
 
 ## Building from Source

@@ -295,6 +295,28 @@
                                 </Grid>
                             </Border>
 
+                            <!-- OSD Suppress in Do Not Disturb Card -->
+                            <Border x:Name="OsdDndCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE769;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="OsdDndTitleText" Text="Suppress in Do Not Disturb" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="OsdDndDescText" Text="Do not show on-screen display when Windows Do Not Disturb or Focus Assist is active" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="OsdDndStatusText" Text="Off" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="OsdDndToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
                             <!-- SECTION: STARTUP & MAINTENANCE -->
                             <TextBlock x:Name="StartupSectionTitle" Text="Startup &amp; Maintenance" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
 

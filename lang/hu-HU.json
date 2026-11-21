@@ -53,6 +53,8 @@
   "Gen_OsdTheme_Light": "Világos",
   "Gen_OsdTimeoutTitle": "Eltűnési idő (ms)",
   "Gen_OsdTimeoutDesc": "Lebegő visszajelző sáv automatikus eltűnési ideje",
+  "Gen_OsdDnd": "Elrejtés Ne zavarjanak módban",
+  "Gen_OsdDndDesc": "Ne jelenjen meg a képernyőn az OSD szalag, ha a Windows Ne zavarjanak vagy Fókuszsegéd aktív",
 
   "Gen_StartupSection": "Indítás és karbantartás",
   "Gen_StartWithWindows": "Indítás a Windowssal",

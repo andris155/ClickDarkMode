@@ -2,9 +2,11 @@
 
 #include <windows.h>
 #include <dwmapi.h>
+#include <shellapi.h>
 #include <algorithm>
 
 #pragma comment(lib, "dwmapi.lib")
+#pragma comment(lib, "shell32.lib")
 
 struct SystemAccentColors {
     COLORREF baseColor = RGB(0, 120, 212);    // SystemAccentColor (#0078D4)
@@ -76,6 +78,34 @@ public:
         if (trayMenuTheme == 1) return true;  // Force Dark
         if (trayMenuTheme == 2) return false; // Force Light
         return !IsWindowsSystemLightTheme(); // 0 = Follow Windows (system)
+    }
+
+    static bool IsDoNotDisturbActive() {
+        // 1. Check Windows Notification Facility (WNF) for Quiet Hours / Do Not Disturb (Windows 11 / modern Windows 10)
+        // WNF_SHEL_QUIETHOURS_ACTIVE_PROFILE_CHANGED = 0xd83063ea3bf1c75ULL
+        // Profiles: 0 = Off, 1 = Priority Only (DND On), 2 = Alarms Only (DND On)
+        HMODULE hNtDll = GetModuleHandleW(L"ntdll.dll");
+        if (hNtDll) {
+            typedef LONG(NTAPI* PFN_NtQueryWnfStateData)(const ULONG64*, const void*, const void*, ULONG*, void*, ULONG*);
+            auto pfn = (PFN_NtQueryWnfStateData)GetProcAddress(hNtDll, "NtQueryWnfStateData");
+            if (pfn) {
+                ULONG64 wnfQuietHours = 0xd83063ea3bf1c75ULL;
+                DWORD data = 0;
+                ULONG size = sizeof(data);
+                ULONG stamp = 0;
+                if (pfn(&wnfQuietHours, NULL, NULL, &stamp, &data, &size) == 0 && size >= sizeof(DWORD)) {
+                    if (data != 0) return true;
+                }
+            }
+        }
+
+        // 2. Fallback to SHQueryUserNotificationState (covers older Windows 10 Quiet Hours / Focus Assist)
+        QUERY_USER_NOTIFICATION_STATE qstate = (QUERY_USER_NOTIFICATION_STATE)0;
+        if (SUCCEEDED(SHQueryUserNotificationState(&qstate))) {
+            if (qstate == QUNS_QUIET_TIME) return true;
+        }
+
+        return false;
     }
 
 private:

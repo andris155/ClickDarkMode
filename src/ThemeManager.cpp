@@ -116,6 +116,17 @@ void SetState(int targetState, bool showOsd) {
             &dwResult
         );
 
+        // 2b. Notify system color changes (classic Win32 / MFC / Qt palette updates)
+        SendMessageTimeoutW(
+            HWND_BROADCAST,
+            WM_SYSCOLORCHANGE,
+            0,
+            0,
+            SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
+            1000,
+            &dwResult
+        );
+
         // 3. Notify Windows theme elements
         SendMessageTimeoutW(
             HWND_BROADCAST,
@@ -130,6 +141,7 @@ void SetState(int targetState, bool showOsd) {
         // 4. Asynchronous broadcast backup to guarantee delivery across all desktop windows
         SendNotifyMessageW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
         SendNotifyMessageW(HWND_BROADCAST, WM_THEMECHANGED, 0, 0);
+        SendNotifyMessageW(HWND_BROADCAST, WM_SYSCOLORCHANGE, 0, 0);
 
         // 5. Directly target Task Manager (which uses both Win32 command bar and WinUI island)
         EnumWindows([](HWND hWnd, LPARAM) -> BOOL {

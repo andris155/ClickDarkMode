@@ -89,6 +89,8 @@ void LocalizationManager::LoadBuiltInDefaults() {
         { L"Gen_OsdTheme_Light", L"Light" },
         { L"Gen_OsdTimeoutTitle", L"Hide Time (ms)" },
         { L"Gen_OsdTimeoutDesc", L"Auto-hide timeout for on-screen banner overlay" },
+        { L"Gen_OsdDnd", L"Suppress in Do Not Disturb" },
+        { L"Gen_OsdDndDesc", L"Do not show on-screen display when Windows Do Not Disturb or Focus Assist is active" },
 
         { L"Gen_StartupSection", L"Startup & Maintenance" },
         { L"Gen_StartWithWindows", L"Start with Windows" },

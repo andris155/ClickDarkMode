@@ -36,7 +36,8 @@ static const wchar_t* MAIN_WND_CLASS = L"ClickDarkMode_MessageWndClass";
 static HWND g_hMainWnd = NULL;
 static UINT g_uTaskbarRestartMsg = 0;
 static constexpr UINT_PTR IDT_GPU_RESET_COOLDOWN = 1006;
-static HANDLE s_hEvents[3] = { NULL, NULL, NULL };
+static HANDLE s_hEvents[5] = { NULL, NULL, NULL, NULL, NULL };
+static HANDLE s_hStopEvent = NULL;
 static std::atomic<bool> s_ipcRunning{ false };
 static std::thread s_ipcThread;
 
@@ -61,6 +62,7 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
         case WM_THEMECHANGED:
         case WM_DWMCOLORIZATIONCOLORCHANGED:
+        case WM_SYSCOLORCHANGE:
         {
             ThemeHelper::GetAccentColors(true);
             ThemeManager::OnSettingChange(0); // Explicit fallback sync: lParam is numeric, not a string
@@ -120,6 +122,12 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             {
             case IDM_TRAY_TOGGLE:
                 ThemeManager::Toggle();
+                break;
+            case IDM_TRAY_DARK:
+                ThemeManager::SetState(0, g_Settings.osdHotkeyEnabled);
+                break;
+            case IDM_TRAY_LIGHT:
+                ThemeManager::SetState(1, g_Settings.osdHotkeyEnabled);
                 break;
             case IDM_TRAY_SETTINGS:
                 ShowSettingsWindow();
@@ -187,18 +195,20 @@ void ExitApp()
 
     // 1. Terminate IPC listener thread
     s_ipcRunning = false;
-    for (int i = 0; i < 3; ++i)
+    if (s_hStopEvent)
     {
-        if (s_hEvents[i])
-        {
-            SetEvent(s_hEvents[i]);
-        }
+        SetEvent(s_hStopEvent);
     }
     if (s_ipcThread.joinable())
     {
         s_ipcThread.join();
     }
-    for (int i = 0; i < 3; ++i)
+    if (s_hStopEvent)
+    {
+        CloseHandle(s_hStopEvent);
+        s_hStopEvent = NULL;
+    }
+    for (int i = 0; i < 5; ++i)
     {
         if (s_hEvents[i])
         {
@@ -258,10 +268,6 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             g_uTaskbarRestartMsg = RegisterWindowMessageW(L"TaskbarCreated");
 
-            g_Settings.Load();
-            g_Loc.Initialize();
-            g_Loc.SetLanguage(g_Settings.language);
-
             HINSTANCE hInstance = GetModuleHandleW(NULL);
             WNDCLASSEXW wc = { sizeof(WNDCLASSEXW) };
             wc.lpfnWndProc = MainWndProc;
@@ -286,11 +292,14 @@ namespace winrt::ThemeSwitcherApp::implementation
                 ScheduleManager::Init(g_hMainWnd);
             }
 
-            // Setup IPC named events
+            // Setup IPC named events and dedicated termination event
+            s_hStopEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
             s_hEvents[0] = CreateEventW(NULL, FALSE, FALSE, EVENT_NAME_SHOW_SETTINGS);
             s_hEvents[1] = CreateEventW(NULL, FALSE, FALSE, EVENT_NAME_EXIT);
             s_hEvents[2] = CreateEventW(NULL, FALSE, FALSE, EVENT_NAME_TOGGLE);
-            for (int i = 0; i < 3; ++i)
+            s_hEvents[3] = CreateEventW(NULL, FALSE, FALSE, EVENT_NAME_DARK);
+            s_hEvents[4] = CreateEventW(NULL, FALSE, FALSE, EVENT_NAME_LIGHT);
+            for (int i = 0; i < 5; ++i)
             {
                 if (s_hEvents[i]) ResetEvent(s_hEvents[i]);
             }
@@ -298,34 +307,64 @@ namespace winrt::ThemeSwitcherApp::implementation
 
             s_ipcThread = std::thread([]()
             {
+                HANDLE waitHandles[6] = {
+                    s_hStopEvent,
+                    s_hEvents[0],
+                    s_hEvents[1],
+                    s_hEvents[2],
+                    s_hEvents[3],
+                    s_hEvents[4]
+                };
+
                 while (s_ipcRunning)
                 {
-                    DWORD dwWait = WaitForMultipleObjects(3, s_hEvents, FALSE, 250);
-                    if (!s_ipcRunning) break;
-                    if (dwWait == WAIT_OBJECT_0) // Show Settings
+                    DWORD dwWait = WaitForMultipleObjects(6, waitHandles, FALSE, INFINITE);
+                    if (!s_ipcRunning || dwWait == WAIT_OBJECT_0) break;
+
+                    if (dwWait == WAIT_OBJECT_0 + 1) // Show Settings
                     {
                         if (g_hMainWnd) PostMessageW(g_hMainWnd, WM_COMMAND, MAKEWPARAM(IDM_TRAY_SETTINGS, 0), 0);
                     }
-                    else if (dwWait == WAIT_OBJECT_0 + 1) // Exit
+                    else if (dwWait == WAIT_OBJECT_0 + 2) // Exit
                     {
                         if (g_hMainWnd) PostMessageW(g_hMainWnd, WM_COMMAND, MAKEWPARAM(IDM_TRAY_EXIT, 0), 0);
                         break;
                     }
-                    else if (dwWait == WAIT_OBJECT_0 + 2) // Toggle
+                    else if (dwWait == WAIT_OBJECT_0 + 3) // Toggle
                     {
                         if (g_hMainWnd) PostMessageW(g_hMainWnd, WM_COMMAND, MAKEWPARAM(IDM_TRAY_TOGGLE, 0), 0);
+                    }
+                    else if (dwWait == WAIT_OBJECT_0 + 4) // Set Dark
+                    {
+                        if (g_hMainWnd) PostMessageW(g_hMainWnd, WM_COMMAND, MAKEWPARAM(IDM_TRAY_DARK, 0), 0);
+                    }
+                    else if (dwWait == WAIT_OBJECT_0 + 5) // Set Light
+                    {
+                        if (g_hMainWnd) PostMessageW(g_hMainWnd, WM_COMMAND, MAKEWPARAM(IDM_TRAY_LIGHT, 0), 0);
                     }
                 }
             });
 
-            // Check command line for --settings / -s or --toggle / -t
+            // Check command line for --settings / -s, --dark / -d, --light / -l, or --toggle / -t
             LPWSTR cmdLine = GetCommandLineW();
             bool openSettings = (cmdLine && (wcsstr(cmdLine, L"--settings") || wcsstr(cmdLine, L"-s")));
+            bool darkImmediate = (cmdLine && (wcsstr(cmdLine, L"--dark") || wcsstr(cmdLine, L"-d")));
+            bool lightImmediate = (cmdLine && (wcsstr(cmdLine, L"--light") || wcsstr(cmdLine, L"-l")));
             bool toggleImmediate = (cmdLine && (wcsstr(cmdLine, L"--toggle") || wcsstr(cmdLine, L"-t")));
 
             if (openSettings)
             {
                 ShowSettingsWindow();
+            }
+            else if (darkImmediate)
+            {
+                ThemeManager::SetState(0, g_Settings.osdIconClickEnabled);
+                TrimProcessWorkingSetAsync();
+            }
+            else if (lightImmediate)
+            {
+                ThemeManager::SetState(1, g_Settings.osdIconClickEnabled);
+                TrimProcessWorkingSetAsync();
             }
             else if (toggleImmediate)
             {

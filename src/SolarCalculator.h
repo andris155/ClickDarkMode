@@ -30,13 +30,16 @@ inline SolarTimes Calculate(double lat, double lon, const SYSTEMTIME& stLocal) {
     int n = daysBeforeMonth[monthIdx] + stLocal.wDay;
     if (isLeap && stLocal.wMonth > 2) n++;
 
-    TIME_ZONE_INFORMATION tzi;
+    TIME_ZONE_INFORMATION tzi = { 0 };
     DWORD tzRes = GetTimeZoneInformation(&tzi);
-    double tzOffsetHours = -(double)tzi.Bias / 60.0;
-    if (tzRes == TIME_ZONE_ID_DAYLIGHT) {
-        tzOffsetHours -= (double)tzi.DaylightBias / 60.0;
-    } else if (tzRes == TIME_ZONE_ID_STANDARD) {
-        tzOffsetHours -= (double)tzi.StandardBias / 60.0;
+    double tzOffsetHours = 0.0;
+    if (tzRes != TIME_ZONE_ID_INVALID) {
+        tzOffsetHours = -(double)tzi.Bias / 60.0;
+        if (tzRes == TIME_ZONE_ID_DAYLIGHT) {
+            tzOffsetHours -= (double)tzi.DaylightBias / 60.0;
+        } else if (tzRes == TIME_ZONE_ID_STANDARD) {
+            tzOffsetHours -= (double)tzi.StandardBias / 60.0;
+        }
     }
 
     auto calcSunTime = [&](bool isSunrise, double& outLocalHour) -> bool {

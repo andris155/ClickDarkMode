@@ -694,6 +694,7 @@ namespace winrt::ThemeSwitcherApp::implementation
                 { g_Loc.Get(L"Gen_CooldownLabel", L"Accidental Click Cooldown (ms)"), catGen, L"cooldown delay accidental double click késleltetés véletlen kattintás", L"General", CooldownSlider() },
                 { g_Loc.Get(L"Gen_OsdTheme", L"OSD Theme"), catGen, L"osd theme appearance dark light banner lebegő téma", L"General", OsdThemeComboBox() },
                 { g_Loc.Get(L"Gen_OsdTimeoutTitle", L"Hide Time (ms)"), catGen, L"osd banner duration timeout hide time display lebegő eltűnési idő", L"General", OsdTimeoutSlider() },
+                { g_Loc.Get(L"Gen_OsdDnd", L"Suppress in Do Not Disturb"), catGen, L"osd dnd do not disturb focus assist quiet hours ne zavarjanak fókuszsegéd elrejtés banner", L"General", OsdDndToggle() },
                 { g_Loc.Get(L"Gen_StartWithWindows", L"Start with Windows"), catGen, L"startup boot autostart windows indítás indulás", L"General", StartupToggle() },
                 { g_Loc.Get(L"Gen_RestoreDefaults", L"Restore Defaults"), catGen, L"restore reset factory defaults alapértelmezések visszaállítás", L"General", RestoreDefaultsButton() },
 
@@ -984,6 +985,15 @@ namespace winrt::ThemeSwitcherApp::implementation
             m_isUpdatingUI = false;
         });
 
+        // OSD Do Not Disturb Toggle
+        OsdDndToggle().Toggled([this](auto&&, auto&&)
+        {
+            if (m_isUpdatingUI) return;
+            g_Settings.osdSuppressOnDnd = OsdDndToggle().IsOn();
+            OsdDndStatusText().Text(g_Loc.Get(g_Settings.osdSuppressOnDnd ? L"Common_On" : L"Common_Off", g_Settings.osdSuppressOnDnd ? L"On" : L"Off").c_str());
+            g_Settings.Save();
+        });
+
         // Startup Toggle
         StartupToggle().Toggled([this](auto&&, auto&&)
         {
@@ -1025,6 +1035,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.osdIconClickEnabled = false;
             g_Settings.osdTimeoutMs = 2000;
             g_Settings.osdTheme = 0;
+            g_Settings.osdSuppressOnDnd = false;
             g_Settings.scheduleMode = 0;
             g_Settings.scheduleSunSource = 0;
             g_Settings.scheduleLightHour = 7;
@@ -1050,7 +1061,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             TrayIcon::SyncUI();
             g_OverlayWindow.ResetGraphicsResources();
             g_OverlayWindow.SyncWithSystem();
-            if (m_hwnd) HotkeyManager::Register(m_hwnd);
+            HotkeyManager::Register();
             TrimProcessWorkingSetAsync();
         });
 
@@ -1223,11 +1234,8 @@ namespace winrt::ThemeSwitcherApp::implementation
             HotkeyStatusText().Text(g_Loc.Get(g_Settings.hotkeyEnabled ? L"Common_On" : L"Common_Off", g_Settings.hotkeyEnabled ? L"On" : L"Off").c_str());
             UpdateHotkeyVisibility();
             g_Settings.Save();
-            if (m_hwnd)
-            {
-                if (g_Settings.hotkeyEnabled) HotkeyManager::Register(m_hwnd);
-                else HotkeyManager::Unregister(m_hwnd);
-            }
+            if (g_Settings.hotkeyEnabled) HotkeyManager::Register();
+            else HotkeyManager::Unregister();
         });
 
         // Hotkey OSD Toggle
@@ -1260,7 +1268,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.Save();
             auto parsed = HotkeyManager::ParseAhkHotkey(g_Settings.hotkey);
             CaptureHotkeyButton().Content(winrt::box_value(HotkeyManager::FormatPreview(parsed)));
-            if (m_hwnd && g_Settings.hotkeyEnabled) HotkeyManager::Register(m_hwnd);
+            if (g_Settings.hotkeyEnabled) HotkeyManager::Register();
         });
 
         // Schedule Mode ComboBox
@@ -1537,6 +1545,9 @@ namespace winrt::ThemeSwitcherApp::implementation
         OsdThemeItemLight().Content(winrt::box_value(g_Loc.Get(L"Gen_OsdTheme_Light", L"Light")));
         OsdTimeoutTitleText().Text(g_Loc.Get(L"Gen_OsdTimeoutTitle", L"Hide Time (ms)"));
         OsdTimeoutDescText().Text(g_Loc.Get(L"Gen_OsdTimeoutDesc", L"Auto-hide timeout for on-screen banner overlay"));
+        OsdDndTitleText().Text(g_Loc.Get(L"Gen_OsdDnd", L"Suppress in Do Not Disturb"));
+        OsdDndDescText().Text(g_Loc.Get(L"Gen_OsdDndDesc", L"Do not show on-screen display when Windows Do Not Disturb or Focus Assist is active"));
+        OsdDndStatusText().Text(g_Loc.Get(OsdDndToggle().IsOn() ? L"Common_On" : L"Common_Off", OsdDndToggle().IsOn() ? L"On" : L"Off").c_str());
 
         StartupSectionTitle().Text(g_Loc.Get(L"Gen_StartupSection", L"Startup & Maintenance"));
         StartupTitleText().Text(g_Loc.Get(L"Gen_StartWithWindows", L"Start with Windows"));
@@ -1751,6 +1762,10 @@ namespace winrt::ThemeSwitcherApp::implementation
         // OSD Timeout
         OsdTimeoutSlider().Value(g_Settings.osdTimeoutMs);
         OsdTimeoutNumberBox().Value(g_Settings.osdTimeoutMs);
+
+        // OSD Do Not Disturb
+        OsdDndToggle().IsOn(g_Settings.osdSuppressOnDnd);
+        OsdDndStatusText().Text(g_Loc.Get(g_Settings.osdSuppressOnDnd ? L"Common_On" : L"Common_Off", g_Settings.osdSuppressOnDnd ? L"On" : L"Off").c_str());
 
         // Startup
         bool isInstalled = Config::IsInstalledInProgramFiles();
@@ -2223,9 +2238,9 @@ namespace winrt::ThemeSwitcherApp::implementation
 
         StopCapture(true);
 
-        if (m_hwnd && g_Settings.hotkeyEnabled)
+        if (g_Settings.hotkeyEnabled)
         {
-            HotkeyManager::Register(m_hwnd);
+            HotkeyManager::Register();
         }
     }
 

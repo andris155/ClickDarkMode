@@ -378,6 +378,16 @@ namespace winrt::ThemeSwitcherApp::implementation
 
     void OverlayWindow::Show(int themeState, const std::wstring& target)
     {
+        if (g_Settings.osdSuppressOnDnd && ThemeHelper::IsDoNotDisturbActive())
+        {
+            if (m_isVisible)
+            {
+                HideWindow();
+            }
+            PreArm(themeState ^ 1, target);
+            return;
+        }
+
         bool targetIsDark = DetermineOsdIsDark(themeState);
         bool currentIsDark = DetermineOsdIsDark(m_displayedState);
         bool themeMismatch = (targetIsDark != currentIsDark);

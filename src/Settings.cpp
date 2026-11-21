@@ -196,6 +196,7 @@ void AppSettings::Load() {
     if (osdTimeoutMs < 200) osdTimeoutMs = 2000;
     osdTheme = (int)GetPrivateProfileIntW(L"Settings", L"OsdTheme", 0, ini.c_str());
     if (osdTheme < 0 || osdTheme > 2) osdTheme = 0;
+    osdSuppressOnDnd = (GetPrivateProfileIntW(L"Settings", L"SuppressOsdOnDoNotDisturb", 0, ini.c_str()) == 1);
 
     // Schedule Settings
     scheduleMode = (int)GetPrivateProfileIntW(L"Schedule", L"Mode", 0, ini.c_str());
@@ -251,6 +252,7 @@ void AppSettings::Save() {
     WritePrivateProfileStringW(L"Settings", L"ShowOsdOnTrayClick", osdIconClickEnabled ? L"1" : L"0", ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"OsdTimeoutMs", std::to_wstring(osdTimeoutMs).c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"OsdTheme", std::to_wstring(osdTheme).c_str(), ini.c_str());
+    WritePrivateProfileStringW(L"Settings", L"SuppressOsdOnDoNotDisturb", osdSuppressOnDnd ? L"1" : L"0", ini.c_str());
 
     WritePrivateProfileStringW(L"Schedule", L"Mode", std::to_wstring(scheduleMode).c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Schedule", L"SunSource", std::to_wstring(scheduleSunSource).c_str(), ini.c_str());

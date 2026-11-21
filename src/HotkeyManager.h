@@ -17,8 +17,8 @@ std::wstring FormatPreview(const ParsedHotkey& hk);
 std::wstring FormatPreview(bool useWin, const std::wstring& baseHk);
 std::wstring GetKeyDisplayName(UINT vk);
 
-bool Register(HWND hWnd);
-void Unregister(HWND hWnd);
+bool Register(HWND hWnd = NULL);
+void Unregister(HWND hWnd = NULL);
 bool IsRegistered();
 
 } // namespace HotkeyManager

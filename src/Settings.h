@@ -27,6 +27,7 @@ struct AppSettings {
     bool osdIconClickEnabled = false; // Show OSD banner on tray icon click (default: false)
     int osdTimeoutMs = 2000;          // OSD banner duration in ms (default: 2000)
     int osdTheme = 0;                 // 0 = Follow the theme (default), 1 = Dark, 2 = Light
+    bool osdSuppressOnDnd = false;    // Suppress OSD banner when Windows Do Not Disturb is active (default: false)
 
     // Schedule
     int scheduleMode = 0;             // 0 = Disabled, 1 = Custom Time, 2 = Sunrise / Sunset

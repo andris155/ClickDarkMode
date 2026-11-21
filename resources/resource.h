@@ -13,6 +13,8 @@
 #define IDM_TRAY_SETTINGS               1002
 #define IDM_TRAY_ABOUT                  1003
 #define IDM_TRAY_EXIT                   1004
+#define IDM_TRAY_DARK                   1005
+#define IDM_TRAY_LIGHT                  1006
 
 // Hotkey IDs
 #define ID_HOTKEY_TOGGLE                2001
@@ -21,6 +23,8 @@
 #define EVENT_NAME_SHOW_SETTINGS        L"ClickDarkMode_Event_ShowSettings"
 #define EVENT_NAME_EXIT                 L"ClickDarkMode_Event_Exit"
 #define EVENT_NAME_TOGGLE               L"ClickDarkMode_Event_Toggle"
+#define EVENT_NAME_DARK                 L"ClickDarkMode_Event_Dark"
+#define EVENT_NAME_LIGHT                L"ClickDarkMode_Event_Light"
 
 // Custom Windows Messages
 #define WM_APP_TRAYMSG                  (WM_APP + 1)
