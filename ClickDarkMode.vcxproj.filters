@@ -22,6 +22,7 @@
       <Filter>XAML</Filter>
     </Page>
     <ApplicationDefinition Include="App.xaml" />
+    <Page Include="src\OverlayWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\pch.h">
@@ -57,6 +58,15 @@
     <ClInclude Include="src\LocalizationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\OverlayWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SolarCalculator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScheduleManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\pch.cpp">
@@ -86,9 +96,18 @@
     <ClCompile Include="src\TrayIcon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\OverlayWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScheduleManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="src\SettingsWindow.idl">
+      <Filter>Source Files</Filter>
+    </Midl>
+    <Midl Include="src\OverlayWindow.idl">
       <Filter>Source Files</Filter>
     </Midl>
   </ItemGroup>
@@ -96,5 +115,17 @@
     <ResourceCompile Include="resources\app.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="resources\sun.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\moon.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resources\program.ico">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
