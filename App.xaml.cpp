@@ -28,12 +28,14 @@
 
 #include <strsafe.h>
 #include <roerrorapi.h>
+#include <dbt.h>
 #include <thread>
 #include <atomic>
 
 static const wchar_t* MAIN_WND_CLASS = L"ClickDarkMode_MessageWndClass";
 static HWND g_hMainWnd = NULL;
 static UINT g_uTaskbarRestartMsg = 0;
+static constexpr UINT_PTR IDT_GPU_RESET_COOLDOWN = 1006;
 static HANDLE s_hEvents[3] = { NULL, NULL, NULL };
 static std::atomic<bool> s_ipcRunning{ false };
 static std::thread s_ipcThread;
@@ -52,14 +54,48 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         {
         case WM_SETTINGCHANGE:
         {
+            ThemeHelper::GetAccentColors(true);
             ThemeManager::OnSettingChange(lParam);
+            return 0;
+        }
+
+        case WM_THEMECHANGED:
+        case WM_DWMCOLORIZATIONCOLORCHANGED:
+        {
+            ThemeHelper::GetAccentColors(true);
+            ThemeManager::OnSettingChange(0); // Explicit fallback sync: lParam is numeric, not a string
             return 0;
         }
 
         case WM_DISPLAYCHANGE:
         {
-            g_OverlayWindow.ResetGraphicsResources();
+            // Debounce graphics reset on display change
+            SetTimer(hwnd, IDT_GPU_RESET_COOLDOWN, 1000, NULL);
             return 0;
+        }
+
+        case WM_DEVICECHANGE:
+        {
+            // DBT_DEVNODES_CHANGED (0x0007) is broadcast when GPU driver restarts/reloads or display devices change
+            if (wParam == DBT_DEVNODES_CHANGED || wParam == 0x0007)
+            {
+                SetTimer(hwnd, IDT_GPU_RESET_COOLDOWN, 1500, NULL);
+            }
+            return 0;
+        }
+
+        case WM_POWERBROADCAST:
+        {
+            if (wParam == PBT_APMRESUMEAUTOMATIC || wParam == PBT_APMRESUMESUSPEND)
+            {
+                // Computer woke up from sleep or hibernation: immediately refresh schedules and theme
+                ScheduleManager::Refresh();
+                ScheduleManager::Tick();
+                ThemeHelper::GetAccentColors(true);
+                ThemeManager::OnSettingChange(0);
+                SetTimer(hwnd, IDT_GPU_RESET_COOLDOWN, 500, NULL);
+            }
+            return TRUE;
         }
 
         case WM_APP_TRAYMSG:
@@ -108,6 +144,14 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
                 ScheduleManager::Tick();
                 return 0;
             }
+            else if (wParam == IDT_GPU_RESET_COOLDOWN)
+            {
+                KillTimer(hwnd, IDT_GPU_RESET_COOLDOWN);
+                g_OverlayWindow.ResetGraphicsResources();
+                TrayIcon::CloseTrayMenu();
+                TrayIcon::SyncUI();
+                return 0;
+            }
             break;
         }
 
@@ -119,6 +163,7 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
         case WM_DESTROY:
         {
+            KillTimer(hwnd, IDT_GPU_RESET_COOLDOWN);
             ScheduleManager::Uninit();
             TrayIcon::Remove();
             HotkeyManager::Unregister(hwnd);
@@ -136,6 +181,10 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 void ExitApp()
 {
+    static bool s_exiting = false;
+    if (s_exiting) return;
+    s_exiting = true;
+
     // 1. Terminate IPC listener thread
     s_ipcRunning = false;
     for (int i = 0; i < 3; ++i)

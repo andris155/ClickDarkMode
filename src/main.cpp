@@ -91,5 +91,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         CloseHandle(hMutex);
     }
 
+    // Clean, instant exit without DLL unload stalls
+    ExitProcess(0);
     return 0;
 }
