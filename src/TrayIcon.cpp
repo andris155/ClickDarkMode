@@ -14,9 +14,29 @@
 #include <winrt/Microsoft.UI.Xaml.Controls.Primitives.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Windowing.h>
+#include <commctrl.h>
 #include <dwmapi.h>
 
+#pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "dwmapi.lib")
+
 namespace TrayIcon {
+
+static LRESULT CALLBACK TrayMenuAnchorSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) {
+    if (uMsg == WM_ERASEBKGND) {
+        return 1;
+    }
+    if (uMsg == WM_PAINT) {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
+        return 0;
+    }
+    if (uMsg == WM_NCDESTROY) {
+        RemoveWindowSubclass(hWnd, TrayMenuAnchorSubclassProc, uIdSubclass);
+    }
+    return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+}
 
 static HWND s_hOwnerWnd = NULL;
 static NOTIFYICONDATAW s_nid = { sizeof(s_nid) };
@@ -243,7 +263,7 @@ static void InitTrayMenu() {
                 }
             }
 
-            // Strip window decorations
+            // Strip window decorations and ensure dummy anchor window is 100% invisible
             LONG_PTR style = GetWindowLongPtrW(s_hTrayMenuWnd, GWL_STYLE);
             style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU | WS_BORDER | WS_DLGFRAME);
             style |= WS_POPUP;
@@ -251,8 +271,14 @@ static void InitTrayMenu() {
 
             LONG_PTR exStyle = GetWindowLongPtrW(s_hTrayMenuWnd, GWL_EXSTYLE);
             exStyle &= ~(WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE | WS_EX_DLGMODALFRAME);
-            exStyle |= WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE;
+            exStyle |= WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_LAYERED;
             SetWindowLongPtrW(s_hTrayMenuWnd, GWL_EXSTYLE, exStyle);
+            SetLayeredWindowAttributes(s_hTrayMenuWnd, 0, 0, LWA_ALPHA);
+
+            HRGN hRgn = CreateRectRgn(0, 0, 0, 0);
+            SetWindowRgn(s_hTrayMenuWnd, hRgn, TRUE);
+
+            SetWindowSubclass(s_hTrayMenuWnd, TrayMenuAnchorSubclassProc, 1, 0);
 
             COLORREF borderColor = DWMWA_COLOR_NONE;
             DwmSetWindowAttribute(s_hTrayMenuWnd, DWMWA_BORDER_COLOR, &borderColor, sizeof(borderColor));
@@ -534,8 +560,9 @@ void ShowContextMenu() {
         }
 
         int anchorY = (iconY < 100) ? (iconY + iconH + 1) : (iconY - 1);
-        SetWindowPos(s_hTrayMenuWnd, HWND_TOPMOST, iconCenterX, anchorY, 1, 1, SWP_SHOWWINDOW);
-        ShowWindow(s_hTrayMenuWnd, SW_SHOW);
+        SetWindowPos(s_hTrayMenuWnd, HWND_TOPMOST, iconCenterX, anchorY, 1, 1, SWP_SHOWWINDOW | SWP_NOACTIVATE);
+        SetWindowRgn(s_hTrayMenuWnd, CreateRectRgn(0, 0, 0, 0), TRUE);
+        ShowWindow(s_hTrayMenuWnd, SW_SHOWNOACTIVATE);
         SetForegroundWindow(s_hTrayMenuWnd);
 
         winrt::Microsoft::UI::Xaml::Controls::Primitives::FlyoutShowOptions options;
