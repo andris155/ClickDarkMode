@@ -55,6 +55,10 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         {
         case WM_SETTINGCHANGE:
         {
+            if (ThemeManager::IsBusy())
+            {
+                return 0; // Suppress echo of our own theme broadcast
+            }
             ThemeHelper::GetAccentColors(true);
             ThemeManager::OnSettingChange(lParam);
             return 0;
@@ -64,6 +68,10 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         case WM_DWMCOLORIZATIONCOLORCHANGED:
         case WM_SYSCOLORCHANGE:
         {
+            if (ThemeManager::IsBusy())
+            {
+                return 0; // Suppress echo of our own theme broadcast
+            }
             ThemeHelper::GetAccentColors(true);
             ThemeManager::OnSettingChange(0); // Explicit fallback sync: lParam is numeric, not a string
             return 0;

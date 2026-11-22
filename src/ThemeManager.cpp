@@ -14,6 +14,10 @@ static const wchar_t* REG_PERSONALIZE = L"Software\\Microsoft\\Windows\\CurrentV
 static std::atomic<bool> s_isBusy{ false };
 static std::atomic<ULONGLONG> s_lastToggleTick{ 0 };
 
+bool IsBusy() {
+    return s_isBusy.load();
+}
+
 int ReadRegKey(const wchar_t* valueName, int defaultValue) {
     HKEY hKey = NULL;
     LONG lRes = RegOpenKeyExW(HKEY_CURRENT_USER, REG_PERSONALIZE, 0, KEY_READ, &hKey);
@@ -90,79 +94,83 @@ void SetState(int targetState, bool showOsd) {
 
     // Broadcast theme change notification to all top-level windows asynchronously
     // in a worker thread so the main UI thread never stalls and OSD displays instantly!
-    std::thread([targetState]()
-    {
-        DWORD_PTR dwResult = 0;
+    try {
+        std::thread([targetState]()
+        {
+            DWORD_PTR dwResult = 0;
 
-        // 1. Notify immersive / modern apps (XAML / WinUI 3)
-        SendMessageTimeoutW(
-            HWND_BROADCAST,
-            WM_SETTINGCHANGE,
-            0,
-            (LPARAM)L"ImmersiveColorSet",
-            SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
-            1500,
-            &dwResult
-        );
+            // 1. Notify immersive / modern apps (XAML / WinUI 3)
+            SendMessageTimeoutW(
+                HWND_BROADCAST,
+                WM_SETTINGCHANGE,
+                0,
+                (LPARAM)L"ImmersiveColorSet",
+                SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
+                1500,
+                &dwResult
+            );
 
-        // 2. Notify classic theme elements and visual styles
-        SendMessageTimeoutW(
-            HWND_BROADCAST,
-            WM_THEMECHANGED,
-            0,
-            0,
-            SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
-            1500,
-            &dwResult
-        );
+            // 2. Notify classic theme elements and visual styles
+            SendMessageTimeoutW(
+                HWND_BROADCAST,
+                WM_THEMECHANGED,
+                0,
+                0,
+                SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
+                1500,
+                &dwResult
+            );
 
-        // 2b. Notify system color changes (classic Win32 / MFC / Qt palette updates)
-        SendMessageTimeoutW(
-            HWND_BROADCAST,
-            WM_SYSCOLORCHANGE,
-            0,
-            0,
-            SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
-            1000,
-            &dwResult
-        );
+            // 2b. Notify system color changes (classic Win32 / MFC / Qt palette updates)
+            SendMessageTimeoutW(
+                HWND_BROADCAST,
+                WM_SYSCOLORCHANGE,
+                0,
+                0,
+                SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
+                1000,
+                &dwResult
+            );
 
-        // 3. Notify Windows theme elements
-        SendMessageTimeoutW(
-            HWND_BROADCAST,
-            WM_SETTINGCHANGE,
-            0,
-            (LPARAM)L"WindowsThemeElement",
-            SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
-            1000,
-            &dwResult
-        );
+            // 3. Notify Windows theme elements
+            SendMessageTimeoutW(
+                HWND_BROADCAST,
+                WM_SETTINGCHANGE,
+                0,
+                (LPARAM)L"WindowsThemeElement",
+                SMTO_ABORTIFHUNG | SMTO_NOTIMEOUTIFNOTHUNG,
+                1000,
+                &dwResult
+            );
 
-        // 4. Asynchronous broadcast backup to guarantee delivery across all desktop windows
-        SendNotifyMessageW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
-        SendNotifyMessageW(HWND_BROADCAST, WM_THEMECHANGED, 0, 0);
-        SendNotifyMessageW(HWND_BROADCAST, WM_SYSCOLORCHANGE, 0, 0);
+            // 4. Asynchronous broadcast backup to guarantee delivery across all desktop windows
+            SendNotifyMessageW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
+            SendNotifyMessageW(HWND_BROADCAST, WM_THEMECHANGED, 0, 0);
+            SendNotifyMessageW(HWND_BROADCAST, WM_SYSCOLORCHANGE, 0, 0);
 
-        // 5. Directly target Task Manager (which uses both Win32 command bar and WinUI island)
-        EnumWindows([](HWND hWnd, LPARAM) -> BOOL {
-            wchar_t className[64] = { 0 };
-            if (GetClassNameW(hWnd, className, 64) && _wcsicmp(className, L"TaskManagerWindow") == 0) {
-                PostMessageW(hWnd, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
-                PostMessageW(hWnd, WM_THEMECHANGED, 0, 0);
-                EnumChildWindows(hWnd, [](HWND hChild, LPARAM) -> BOOL {
-                    PostMessageW(hChild, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
-                    PostMessageW(hChild, WM_THEMECHANGED, 0, 0);
-                    InvalidateRect(hChild, NULL, TRUE);
-                    return TRUE;
-                }, 0);
-                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_FRAME);
-            }
-            return TRUE;
-        }, 0);
+            // 5. Directly target Task Manager (which uses both Win32 command bar and WinUI island)
+            EnumWindows([](HWND hWnd, LPARAM) -> BOOL {
+                wchar_t className[64] = { 0 };
+                if (GetClassNameW(hWnd, className, 64) && _wcsicmp(className, L"TaskManagerWindow") == 0) {
+                    PostMessageW(hWnd, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
+                    PostMessageW(hWnd, WM_THEMECHANGED, 0, 0);
+                    EnumChildWindows(hWnd, [](HWND hChild, LPARAM) -> BOOL {
+                        PostMessageW(hChild, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
+                        PostMessageW(hChild, WM_THEMECHANGED, 0, 0);
+                        InvalidateRect(hChild, NULL, TRUE);
+                        return TRUE;
+                    }, 0);
+                    RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_FRAME);
+                }
+                return TRUE;
+            }, 0);
 
-        s_lastToggleTick = GetTickCount64();
+            s_lastToggleTick = GetTickCount64();
+            s_isBusy = false;
+        }).detach();
+    } catch (...) {
         s_isBusy = false;
-    }).detach();
+    }
 }
 
 void Toggle(bool fromHotkey) {

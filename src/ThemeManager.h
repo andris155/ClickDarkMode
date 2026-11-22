@@ -4,6 +4,7 @@
 #include <windows.h>
 
 namespace ThemeManager {
+    bool IsBusy();
     int ReadRegKey(const wchar_t* valueName, int defaultValue);
     bool WriteRegKey(const wchar_t* valueName, DWORD value);
     int GetState(); // -1 = Mixed, 0 = Dark, 1 = Light

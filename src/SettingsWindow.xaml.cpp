@@ -401,11 +401,17 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             if (g_Settings.transparencyEnabled)
             {
-                SystemBackdrop(winrt::Microsoft::UI::Xaml::Media::MicaBackdrop());
+                if (!SystemBackdrop())
+                {
+                    SystemBackdrop(winrt::Microsoft::UI::Xaml::Media::MicaBackdrop());
+                }
             }
             else
             {
-                SystemBackdrop(nullptr);
+                if (SystemBackdrop())
+                {
+                    SystemBackdrop(nullptr);
+                }
             }
         }
         catch (...)
@@ -905,6 +911,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             TransparencyStatusText().Text(g_Loc.Get(g_Settings.transparencyEnabled ? L"Common_On" : L"Common_Off", g_Settings.transparencyEnabled ? L"On" : L"Off").c_str());
             g_Settings.Save();
             SetupBackdrop();
+            ApplyTheme();
         });
 
         // Target Theme Combo
@@ -2112,23 +2119,18 @@ namespace winrt::ThemeSwitcherApp::implementation
         }
         else if (uMsg == WM_ERASEBKGND)
         {
-            HDC hdc = reinterpret_cast<HDC>(wParam);
-            if (hdc)
-            {
-                RECT rc;
-                GetClientRect(hWnd, &rc);
-                bool isDark = ThemeHelper::IsAppInDarkMode(g_Settings.appTheme);
-                COLORREF bg = isDark ? RGB(32, 32, 32) : RGB(243, 243, 243);
-                HBRUSH hbr = CreateSolidBrush(bg);
-                FillRect(hdc, &rc, hbr);
-                DeleteObject(hbr);
-                return 1;
-            }
+            return 1; // Prevent GDI background erase from flashing over DirectComposition / Mica
         }
-        else if (uMsg == WM_SETTINGCHANGE || uMsg == WM_THEMECHANGED)
+        else if (uMsg == WM_SETTINGCHANGE || uMsg == WM_THEMECHANGED || uMsg == WM_SYSCOLORCHANGE || uMsg == WM_DWMCOLORIZATIONCOLORCHANGED)
         {
+            // If theme change was initiated by our own program, suppress our own broadcast echo
+            if (ThemeManager::IsBusy())
+            {
+                return 0;
+            }
+
             pThis->ApplyTheme();
-            pThis->SetupBackdrop();
+            return 0; // Prevent WinUI 3 from resetting controls to Application.RequestedTheme
         }
         else if (uMsg == WM_NCDESTROY)
         {
@@ -2357,13 +2359,11 @@ void OnSettingsThemeChanged()
                 dq.TryEnqueue([impl]()
                 {
                     impl->ApplyTheme();
-                    impl->SetupBackdrop();
                 });
             }
             else
             {
                 impl->ApplyTheme();
-                impl->SetupBackdrop();
             }
         }
     }
