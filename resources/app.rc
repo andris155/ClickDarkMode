@@ -11,8 +11,8 @@ IDI_ICON_MOON_DARK ICON "moon-dark.ico"
 
 // Version Information
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     1,0,2,0
-PRODUCTVERSION  1,0,2,0
+FILEVERSION     1,0,3,0
+PRODUCTVERSION  1,0,3,0
 FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
 #ifdef _DEBUG
 FILEFLAGS       VS_FF_DEBUG
@@ -29,11 +29,11 @@ BEGIN
         BEGIN
             VALUE "CompanyName",      "andris155"
             VALUE "FileDescription",  "ClickDarkMode"
-            VALUE "FileVersion",      "1.0.2.0"
+            VALUE "FileVersion",      "1.0.3.0"
             VALUE "InternalName",     "ClickDarkMode"
             VALUE "OriginalFilename", "ClickDarkMode.exe"
             VALUE "ProductName",      "ClickDarkMode"
-            VALUE "ProductVersion",   "v1.0.2"
+            VALUE "ProductVersion",   "v1.0.3"
             VALUE "LegalCopyright",   "Copyright (C) 2026 andris155"
         END
     END
