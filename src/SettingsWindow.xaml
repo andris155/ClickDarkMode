@@ -6,6 +6,12 @@
     Title="ClickDarkMode settings">
 
     <Grid x:Name="RootGrid" Background="Transparent">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition FromVerticalOffset="28"/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
