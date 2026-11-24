@@ -24,9 +24,16 @@ namespace winrt::ThemeSwitcherApp::implementation
         void DestroyWindow();
 
     private:
+        enum class AnimState { None, Showing, Hiding };
+
         void SetupWindow();
         void SetupBackdrop(bool isDark);
         void DetachBackdrop();
+        void StartShowAnimation();
+        void StartHideAnimation();
+        void StopAnimation();
+        void UpdateAnimation();
+        void FinishHide();
         static LRESULT CALLBACK SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 
         HWND m_hwnd{ nullptr };
@@ -46,6 +53,15 @@ namespace winrt::ThemeSwitcherApp::implementation
         int m_lastW{ 0 };
         int m_lastH{ 0 };
         ULONGLONG m_hideAfterTick{ 0 };
+
+        AnimState m_animState{ AnimState::None };
+        LARGE_INTEGER m_animStartQpc{};
+        double m_animDurationMs{ 180.0 };
+        int m_animStartY{ 0 };
+        int m_animEndY{ 0 };
+        int m_currentY{ 0 };
+        int m_slideOffset{ 64 };
+        winrt::event_token m_renderingToken{};
     };
 }
 
