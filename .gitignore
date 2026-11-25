@@ -68,3 +68,6 @@ scratch/
 Thumbs.db
 desktop.ini
 $RECYCLE.BIN/
+
+# Local AI / Agent rules
+GEMINI.md
