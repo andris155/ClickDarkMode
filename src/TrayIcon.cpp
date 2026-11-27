@@ -330,7 +330,7 @@ static void InitTrayMenu() {
 
         // 3. About info (disabled item)
         s_aboutItem = winrt::Microsoft::UI::Xaml::Controls::MenuFlyoutItem();
-        s_aboutItem.Text(L"ClickDarkMode v1.0.3");
+        s_aboutItem.Text(L"ClickDarkMode v1.0.4");
         s_aboutItem.Height(32.0);
         s_aboutItem.Padding({ 11.0, 4.0, 11.0, 5.0 });
         auto iconInfo = winrt::Microsoft::UI::Xaml::Controls::FontIcon();

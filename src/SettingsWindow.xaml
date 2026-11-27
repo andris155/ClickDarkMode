@@ -1002,7 +1002,7 @@
                                     <Image x:Name="AboutAppIconImage" Width="48" Height="48" VerticalAlignment="Center" Margin="0,0,16,0"/>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Text="ClickDarkMode" FontSize="15" FontWeight="SemiBold"/>
-                                        <TextBlock x:Name="AboutVersionText" Text="Version 1.0.3 (x64 Release)" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock x:Name="AboutVersionText" Text="Version 1.0.4 (x64 Release)" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                                         <TextBlock x:Name="AboutAppTypeText" Text="Native WinUI 3 / Windows App SDK 2.6 Desktop Application" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
                                         <TextBlock Text="Copyright (C) 2026 andris155" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
                                     </StackPanel>
