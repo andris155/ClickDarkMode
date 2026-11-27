@@ -1991,14 +1991,8 @@ namespace winrt::ThemeSwitcherApp::implementation
         double lat = g_Settings.scheduleLatitude;
         double lon = g_Settings.scheduleLongitude;
 
-        wchar_t latDir = (lat >= 0) ? L'N' : L'S';
-        wchar_t lonDir = (lon >= 0) ? L'E' : L'W';
-        double absLat = std::abs(lat);
-        double absLon = std::abs(lon);
-
-        std::wstring coordsLabel = g_Loc.Get(L"Schedule_DetectedCoordsLabel", L"Coordinates");
         wchar_t buf[128];
-        swprintf_s(buf, L"%s: %.4f\u00B0 %c, %.4f\u00B0 %c", coordsLabel.c_str(), absLat, latDir, absLon, lonDir);
+        swprintf_s(buf, L"%.4f, %.4f", lat, lon);
         DetectedCoordsText().Text(buf);
     }
 
