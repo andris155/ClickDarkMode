@@ -172,7 +172,6 @@
   "Schedule_DetectLocation": "Észlelés",
   "Schedule_DetectTooltip": "Jelenlegi koordináták lekérése a Windows Helymeghatározással",
   "Schedule_LocDetecting": "Észlelés...",
-  "Schedule_DetectedCoordsLabel": "Koordináták",
   "Schedule_LocNotDetected": "Még nincs észlelt koordináta. Kattintson az Észlelés gombra.",
   "Schedule_SunriseOffsetTitle": "Napkelte eltolás (perc)",
   "Schedule_SunriseOffsetDesc": "Világos mód kapcsolása korábban (negatív) vagy később (pozitív) a napkeltéhez képest",

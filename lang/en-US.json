@@ -172,7 +172,6 @@
   "Schedule_DetectLocation": "Detect",
   "Schedule_DetectTooltip": "Detect current coordinates using Windows Location",
   "Schedule_LocDetecting": "Detecting...",
-  "Schedule_DetectedCoordsLabel": "Coordinates",
   "Schedule_LocNotDetected": "No coordinates detected yet. Click Detect to acquire.",
   "Schedule_SunriseOffsetTitle": "Sunrise Offset (minutes)",
   "Schedule_SunriseOffsetDesc": "Shift Light Mode switch earlier (negative) or later (positive) relative to sunrise",

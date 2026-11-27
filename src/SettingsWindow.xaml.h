@@ -65,7 +65,6 @@ namespace winrt::ThemeSwitcherApp::implementation
         bool m_isUpdatingUI{ false };
         bool m_isAppExiting{ false };
         bool m_isClosing{ false };
-        bool m_isInitialized{ false };
         bool m_trayTabLoaded{ false };
         bool m_scheduleTabLoaded{ false };
         bool m_aboutTabLoaded{ false };

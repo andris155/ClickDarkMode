@@ -170,7 +170,6 @@ void LocalizationManager::LoadBuiltInDefaults() {
         { L"Schedule_DetectLocation", L"Detect" },
         { L"Schedule_DetectTooltip", L"Detect current coordinates using Windows Location" },
         { L"Schedule_LocDetecting", L"Detecting..." },
-        { L"Schedule_DetectedCoordsLabel", L"Coordinates" },
         { L"Schedule_LocNotDetected", L"No coordinates detected yet. Click Detect to acquire." },
         { L"Schedule_SunriseOffsetTitle", L"Sunrise Offset (minutes)" },
         { L"Schedule_SunriseOffsetDesc", L"Shift Light Mode switch earlier (negative) or later (positive) relative to sunrise" },

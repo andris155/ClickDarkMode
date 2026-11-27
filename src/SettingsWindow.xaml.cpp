@@ -168,7 +168,6 @@ namespace winrt::ThemeSwitcherApp::implementation
         PopulateLanguageList();
         LoadSettingsToUI();
         ApplyTheme();
-        m_isInitialized = true;
     }
 
     SettingsWindow::~SettingsWindow()
