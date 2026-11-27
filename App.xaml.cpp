@@ -418,21 +418,14 @@ namespace winrt::ThemeSwitcherApp::implementation
             else if (darkImmediate)
             {
                 ThemeManager::SetState(0, g_Settings.osdIconClickEnabled);
-                TrimProcessWorkingSetAsync();
             }
             else if (lightImmediate)
             {
                 ThemeManager::SetState(1, g_Settings.osdIconClickEnabled);
-                TrimProcessWorkingSetAsync();
             }
             else if (toggleImmediate)
             {
                 ThemeManager::Toggle();
-                TrimProcessWorkingSetAsync();
-            }
-            else
-            {
-                TrimProcessWorkingSetAsync();
             }
         }
         catch (...)

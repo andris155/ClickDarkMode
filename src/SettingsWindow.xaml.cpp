@@ -326,7 +326,6 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             StopCapture(false);
             s_settingsWindow = nullptr;
-            TrimProcessWorkingSetAsync();
         });
 
         ExtendsContentIntoTitleBar(true);
@@ -1108,7 +1107,6 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_OverlayWindow.ResetGraphicsResources();
             g_OverlayWindow.SyncWithSystem();
             HotkeyManager::Register();
-            TrimProcessWorkingSetAsync();
         });
 
         // Tray Icon Mode ComboBox
@@ -2416,13 +2414,4 @@ void OnSettingsThemeChanged()
             }
         }
     }
-}
-
-void TrimProcessWorkingSetAsync()
-{
-    std::thread([]()
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-        SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
-    }).detach();
 }
