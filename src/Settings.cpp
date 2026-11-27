@@ -198,6 +198,10 @@ void AppSettings::Load() {
     if (osdTheme < 0 || osdTheme > 2) osdTheme = 0;
     osdSuppressOnDnd = (GetPrivateProfileIntW(L"Settings", L"SuppressOsdOnDoNotDisturb", 0, ini.c_str()) == 1);
 
+    // Power & Battery
+    darkOnBattery = (GetPrivateProfileIntW(L"Settings", L"DarkOnBattery", 0, ini.c_str()) == 1);
+    darkOnEnergySaver = (GetPrivateProfileIntW(L"Settings", L"DarkOnEnergySaver", 0, ini.c_str()) == 1);
+
     // Schedule Settings
     scheduleMode = (int)GetPrivateProfileIntW(L"Schedule", L"Mode", 0, ini.c_str());
     if (scheduleMode < 0 || scheduleMode > 2) scheduleMode = 0;
@@ -253,6 +257,8 @@ void AppSettings::Save() {
     WritePrivateProfileStringW(L"Settings", L"OsdTimeoutMs", std::to_wstring(osdTimeoutMs).c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"OsdTheme", std::to_wstring(osdTheme).c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Settings", L"SuppressOsdOnDoNotDisturb", osdSuppressOnDnd ? L"1" : L"0", ini.c_str());
+    WritePrivateProfileStringW(L"Settings", L"DarkOnBattery", darkOnBattery ? L"1" : L"0", ini.c_str());
+    WritePrivateProfileStringW(L"Settings", L"DarkOnEnergySaver", darkOnEnergySaver ? L"1" : L"0", ini.c_str());
 
     WritePrivateProfileStringW(L"Schedule", L"Mode", std::to_wstring(scheduleMode).c_str(), ini.c_str());
     WritePrivateProfileStringW(L"Schedule", L"SunSource", std::to_wstring(scheduleSunSource).c_str(), ini.c_str());

@@ -460,8 +460,10 @@ void SyncUI() {
         targetNum = useDark ? g_Settings.darkIconNumber : g_Settings.iconNumber;
     }
 
-    int cx = GetSystemMetrics(SM_CXSMICON);
-    int cy = GetSystemMetrics(SM_CYSMICON);
+    HWND hTray = FindWindowW(L"Shell_TrayWnd", NULL);
+    UINT trayDpi = hTray ? GetDpiForWindow(hTray) : 0;
+    int cx = (trayDpi > 0) ? GetSystemMetricsForDpi(SM_CXSMICON, trayDpi) : GetSystemMetrics(SM_CXSMICON);
+    int cy = (trayDpi > 0) ? GetSystemMetricsForDpi(SM_CYSMICON, trayDpi) : GetSystemMetrics(SM_CYSMICON);
     if (cx <= 0) cx = 16;
     if (cy <= 0) cy = 16;
 

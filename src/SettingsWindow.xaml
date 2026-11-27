@@ -323,6 +323,53 @@
                                 </Grid>
                             </Border>
 
+                            <!-- SECTION: POWER & BATTERY -->
+                            <TextBlock x:Name="PowerSectionTitle" Text="Power &amp; Battery" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+
+                            <!-- Dark Mode on Battery Card -->
+                            <Border x:Name="DarkOnBatteryCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE83F;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="DarkOnBatteryTitleText" Text="Dark mode on battery" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="DarkOnBatteryDescText" Text="Switch to dark mode when the device runs only on battery" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="DarkOnBatteryStatusText" Text="Off" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="DarkOnBatteryToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Dark Mode on Energy Saver Card -->
+                            <Border x:Name="DarkOnEnergySaverCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEBB8;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                        <TextBlock x:Name="DarkOnEnergySaverTitleText" Text="Dark mode on energy saver" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="DarkOnEnergySaverDescText" Text="Switch to dark mode when Windows Energy Saver is enabled" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <TextBlock x:Name="DarkOnEnergySaverStatusText" Text="Off" FontSize="14" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                        <ToggleSwitch x:Name="DarkOnEnergySaverToggle" MinWidth="0" OnContent="" OffContent="" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
                             <!-- SECTION: STARTUP & MAINTENANCE -->
                             <TextBlock x:Name="StartupSectionTitle" Text="Startup &amp; Maintenance" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
 
@@ -591,6 +638,9 @@
 
                             <!-- SECTION: GLOBAL SHORTCUT -->
                             <TextBlock x:Name="GlobalShortcutSectionTitle" Text="Global Shortcut" FontSize="14" FontWeight="SemiBold" Margin="0,4,0,6"/>
+
+                            <!-- Hotkey Conflict InfoBar -->
+                            <InfoBar x:Name="HotkeyConflictInfoBar" IsOpen="False" Visibility="Collapsed" Severity="Warning" IsClosable="True" Margin="0,0,0,8"/>
 
                             <!-- Enable Hotkey Card -->
                             <Border x:Name="HotkeyEnableCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -1003,7 +1053,7 @@
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                         <TextBlock Text="ClickDarkMode" FontSize="15" FontWeight="SemiBold"/>
                                         <TextBlock x:Name="AboutVersionText" Text="Version 1.0.4 (x64 Release)" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                        <TextBlock x:Name="AboutAppTypeText" Text="Native WinUI 3 / Windows App SDK 2.6 Desktop Application" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
+                                        <TextBlock x:Name="AboutAppTypeText" Text="Native WinUI 3 Desktop Application" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
                                         <TextBlock Text="Copyright (C) 2026 andris155" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </Grid>

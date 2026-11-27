@@ -56,6 +56,12 @@
   "Gen_OsdDnd": "Suppress in Do Not Disturb",
   "Gen_OsdDndDesc": "Do not show on-screen display when Windows Do Not Disturb or Focus Assist is active",
 
+  "Gen_PowerSection": "Power & Battery",
+  "Gen_DarkOnBattery": "Dark mode on battery",
+  "Gen_DarkOnBatteryDesc": "Switch to dark mode when the device runs only on battery",
+  "Gen_DarkOnEnergySaver": "Dark mode on energy saver",
+  "Gen_DarkOnEnergySaverDesc": "Switch to dark mode when Windows Energy Saver is enabled",
+
   "Gen_StartupSection": "Startup & Maintenance",
   "Gen_StartWithWindows": "Start with Windows",
   "Gen_StartWithWindowsDesc": "Launch ClickDarkMode automatically when Windows starts",
@@ -110,6 +116,8 @@
   "Hk_ShowOsdDesc": "Display a floating notification banner when toggling theme with shortcut",
   "Hk_CombinationLabel": "Shortcut Combination",
   "Hk_CombinationDesc": "Click the button and press your desired key combination",
+  "Hk_ConflictTitle": "Shortcut conflict",
+  "Hk_ConflictMsg": "This shortcut is already in use by another application. Please choose a different key combination.",
   "Hk_PressKey": "Press key...",
   "Hk_PressAnyKey": "Press any key...",
   "Hk_ResetShortcutsTitle": "Reset Shortcuts",
@@ -118,7 +126,7 @@
 
   "About_HeaderTitle": "About ClickDarkMode",
   "About_HeaderSubtitle": "Lightweight, modern Windows 11 theme switching utility",
-  "About_AppType": "Native WinUI 3 / Windows App SDK 2.6 Desktop Application",
+  "About_AppType": "Native WinUI 3 Desktop Application",
   "About_DescTitle": "Description",
   "About_DescContent": "A modern, lightweight Windows 11 utility for instant switching between Light and Dark themes for applications and system surfaces. Supports custom tray icons, accidental-click cooldown, global keyboard shortcuts, and ultra-low background memory footprint.",
   "About_LicenseTitle": "License",

@@ -533,6 +533,22 @@ namespace winrt::ThemeSwitcherApp::implementation
         HotkeyCombinationCard().Visibility(vis);
         HotkeyOsdCard().Visibility(vis);
         ResetHotkeysCard().Visibility(vis);
+
+        if (HotkeyConflictInfoBar())
+        {
+            if (g_Settings.hotkeyEnabled && !HotkeyManager::IsRegistered())
+            {
+                HotkeyConflictInfoBar().Title(g_Loc.Get(L"Hk_ConflictTitle", L"Shortcut conflict"));
+                HotkeyConflictInfoBar().Message(g_Loc.Get(L"Hk_ConflictMsg", L"This shortcut is already in use by another application. Please choose a different key combination."));
+                HotkeyConflictInfoBar().Visibility(Visibility::Visible);
+                HotkeyConflictInfoBar().IsOpen(true);
+            }
+            else
+            {
+                HotkeyConflictInfoBar().IsOpen(false);
+                HotkeyConflictInfoBar().Visibility(Visibility::Collapsed);
+            }
+        }
     }
 
     void SettingsWindow::EnsureTrayTabLoaded()
@@ -703,6 +719,8 @@ namespace winrt::ThemeSwitcherApp::implementation
                 { g_Loc.Get(L"Gen_OsdTheme", L"OSD Theme"), catGen, L"osd theme appearance dark light banner lebegő téma", L"General", OsdThemeComboBox() },
                 { g_Loc.Get(L"Gen_OsdTimeoutTitle", L"Hide Time (ms)"), catGen, L"osd banner duration timeout hide time display lebegő eltűnési idő", L"General", OsdTimeoutSlider() },
                 { g_Loc.Get(L"Gen_OsdDnd", L"Suppress in Do Not Disturb"), catGen, L"osd dnd do not disturb focus assist quiet hours ne zavarjanak fókuszsegéd elrejtés banner", L"General", OsdDndToggle() },
+                { g_Loc.Get(L"Gen_DarkOnBattery", L"Dark mode on battery"), catGen, L"battery power unplugged dark mode akkumulátor töltő sötét mód", L"General", DarkOnBatteryToggle() },
+                { g_Loc.Get(L"Gen_DarkOnEnergySaver", L"Dark mode on energy saver"), catGen, L"energy saver battery saver power saving dark mode energiatakarékos akkukímélő sötét mód", L"General", DarkOnEnergySaverToggle() },
                 { g_Loc.Get(L"Gen_StartWithWindows", L"Start with Windows"), catGen, L"startup boot autostart windows indítás indulás", L"General", StartupToggle() },
                 { g_Loc.Get(L"Gen_RestoreDefaults", L"Restore Defaults"), catGen, L"restore reset factory defaults alapértelmezések visszaállítás", L"General", RestoreDefaultsButton() },
 
@@ -1003,6 +1021,26 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.Save();
         });
 
+        // Dark Mode on Battery Toggle
+        DarkOnBatteryToggle().Toggled([this](auto&&, auto&&)
+        {
+            if (m_isUpdatingUI) return;
+            g_Settings.darkOnBattery = DarkOnBatteryToggle().IsOn();
+            DarkOnBatteryStatusText().Text(g_Loc.Get(g_Settings.darkOnBattery ? L"Common_On" : L"Common_Off", g_Settings.darkOnBattery ? L"On" : L"Off").c_str());
+            g_Settings.Save();
+            ScheduleManager::CheckPowerRules(true);
+        });
+
+        // Dark Mode on Energy Saver Toggle
+        DarkOnEnergySaverToggle().Toggled([this](auto&&, auto&&)
+        {
+            if (m_isUpdatingUI) return;
+            g_Settings.darkOnEnergySaver = DarkOnEnergySaverToggle().IsOn();
+            DarkOnEnergySaverStatusText().Text(g_Loc.Get(g_Settings.darkOnEnergySaver ? L"Common_On" : L"Common_Off", g_Settings.darkOnEnergySaver ? L"On" : L"Off").c_str());
+            g_Settings.Save();
+            ScheduleManager::CheckPowerRules(true);
+        });
+
         // Startup Toggle
         StartupToggle().Toggled([this](auto&&, auto&&)
         {
@@ -1032,6 +1070,8 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.target = L"Both";
             g_Settings.toggleDelayMs = 500;
             g_Settings.startWithWindows = false;
+            g_Settings.darkOnBattery = false;
+            g_Settings.darkOnEnergySaver = false;
             g_Settings.trayIconMode = 0;
             g_Settings.dualIcons = true;
             g_Settings.iconFile = L"sun.ico";
@@ -1241,10 +1281,10 @@ namespace winrt::ThemeSwitcherApp::implementation
             if (m_isUpdatingUI) return;
             g_Settings.hotkeyEnabled = HotkeyToggle().IsOn();
             HotkeyStatusText().Text(g_Loc.Get(g_Settings.hotkeyEnabled ? L"Common_On" : L"Common_Off", g_Settings.hotkeyEnabled ? L"On" : L"Off").c_str());
-            UpdateHotkeyVisibility();
             g_Settings.Save();
             if (g_Settings.hotkeyEnabled) HotkeyManager::Register();
             else HotkeyManager::Unregister();
+            UpdateHotkeyVisibility();
         });
 
         // Hotkey OSD Toggle
@@ -1278,6 +1318,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             auto parsed = HotkeyManager::ParseAhkHotkey(g_Settings.hotkey);
             CaptureHotkeyButton().Content(winrt::box_value(HotkeyManager::FormatPreview(parsed)));
             if (g_Settings.hotkeyEnabled) HotkeyManager::Register();
+            UpdateHotkeyVisibility();
         });
 
         // Schedule Mode ComboBox
@@ -1558,6 +1599,14 @@ namespace winrt::ThemeSwitcherApp::implementation
         OsdDndDescText().Text(g_Loc.Get(L"Gen_OsdDndDesc", L"Do not show on-screen display when Windows Do Not Disturb or Focus Assist is active"));
         OsdDndStatusText().Text(g_Loc.Get(OsdDndToggle().IsOn() ? L"Common_On" : L"Common_Off", OsdDndToggle().IsOn() ? L"On" : L"Off").c_str());
 
+        PowerSectionTitle().Text(g_Loc.Get(L"Gen_PowerSection", L"Power & Battery"));
+        DarkOnBatteryTitleText().Text(g_Loc.Get(L"Gen_DarkOnBattery", L"Dark mode on battery"));
+        DarkOnBatteryDescText().Text(g_Loc.Get(L"Gen_DarkOnBatteryDesc", L"Switch to dark mode when the device runs only on battery"));
+        DarkOnBatteryStatusText().Text(g_Loc.Get(DarkOnBatteryToggle().IsOn() ? L"Common_On" : L"Common_Off", DarkOnBatteryToggle().IsOn() ? L"On" : L"Off").c_str());
+        DarkOnEnergySaverTitleText().Text(g_Loc.Get(L"Gen_DarkOnEnergySaver", L"Dark mode on energy saver"));
+        DarkOnEnergySaverDescText().Text(g_Loc.Get(L"Gen_DarkOnEnergySaverDesc", L"Switch to dark mode when Windows Energy Saver is enabled"));
+        DarkOnEnergySaverStatusText().Text(g_Loc.Get(DarkOnEnergySaverToggle().IsOn() ? L"Common_On" : L"Common_Off", DarkOnEnergySaverToggle().IsOn() ? L"On" : L"Off").c_str());
+
         StartupSectionTitle().Text(g_Loc.Get(L"Gen_StartupSection", L"Startup & Maintenance"));
         StartupTitleText().Text(g_Loc.Get(L"Gen_StartWithWindows", L"Start with Windows"));
         bool isInstalled = Config::IsInstalledInProgramFiles();
@@ -1683,7 +1732,7 @@ namespace winrt::ThemeSwitcherApp::implementation
 #else
         AboutVersionText().Text(L"Version 1.0.4 (x64 Release)");
 #endif
-        AboutAppTypeText().Text(g_Loc.Get(L"About_AppType", L"Native WinUI 3 / Windows App SDK 2.6 Desktop Application"));
+        AboutAppTypeText().Text(g_Loc.Get(L"About_AppType", L"Native WinUI 3 Desktop Application"));
         AboutDescTitleText().Text(g_Loc.Get(L"About_DescTitle", L"Description"));
         AboutDescContentText().Text(g_Loc.Get(L"About_DescContent", L"A modern, lightweight Windows 11 utility for instant switching between Light and Dark themes for applications and system surfaces. Supports custom tray icons, accidental-click cooldown, global keyboard shortcuts, and ultra-low background memory footprint."));
         AboutLicenseTitleText().Text(g_Loc.Get(L"About_LicenseTitle", L"License"));
@@ -1775,6 +1824,12 @@ namespace winrt::ThemeSwitcherApp::implementation
         // OSD Do Not Disturb
         OsdDndToggle().IsOn(g_Settings.osdSuppressOnDnd);
         OsdDndStatusText().Text(g_Loc.Get(g_Settings.osdSuppressOnDnd ? L"Common_On" : L"Common_Off", g_Settings.osdSuppressOnDnd ? L"On" : L"Off").c_str());
+
+        // Power & Battery
+        DarkOnBatteryToggle().IsOn(g_Settings.darkOnBattery);
+        DarkOnBatteryStatusText().Text(g_Loc.Get(g_Settings.darkOnBattery ? L"Common_On" : L"Common_Off", g_Settings.darkOnBattery ? L"On" : L"Off").c_str());
+        DarkOnEnergySaverToggle().IsOn(g_Settings.darkOnEnergySaver);
+        DarkOnEnergySaverStatusText().Text(g_Loc.Get(g_Settings.darkOnEnergySaver ? L"Common_On" : L"Common_Off", g_Settings.darkOnEnergySaver ? L"On" : L"Off").c_str());
 
         // Startup
         bool isInstalled = Config::IsInstalledInProgramFiles();
@@ -2251,6 +2306,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             HotkeyManager::Register();
         }
+        UpdateHotkeyVisibility();
     }
 
     void SettingsWindow::ShowWindow()

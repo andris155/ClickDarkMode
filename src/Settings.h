@@ -12,6 +12,8 @@ struct AppSettings {
     std::wstring target = L"Both"; // "Both", "Apps", "System"
     int toggleDelayMs = 500;
     bool startWithWindows = false;
+    bool darkOnBattery = false;       // Switch to dark mode when running on battery only
+    bool darkOnEnergySaver = false;   // Switch to dark mode when Energy Saver is enabled
 
     int trayIconMode = 0;             // 0 = Follow Windows (system) [Default], 1 = Custom, 2 = Disabled (program icon)
     bool dualIcons = true;

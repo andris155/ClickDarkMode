@@ -5,6 +5,7 @@
 #include "LocalizationManager.h"
 #include "App.xaml.h"
 #include "OverlayWindow.h"
+#include "ScheduleManager.h"
 #include <thread>
 #include <atomic>
 
@@ -74,6 +75,7 @@ int GetNextToggleState() {
 void SetState(int targetState, bool showOsd) {
     if (s_isBusy) return;
     s_isBusy = true;
+    s_lastToggleTick = GetTickCount64();
 
     if (showOsd) {
         g_OverlayWindow.Show(targetState, g_Settings.target);
@@ -179,6 +181,7 @@ void Toggle(bool fromHotkey) {
         return;
     }
 
+    ScheduleManager::ClearPowerDarkOverride();
     int nextState = GetNextToggleState();
     bool showOsd = fromHotkey ? g_Settings.osdHotkeyEnabled : g_Settings.osdIconClickEnabled;
     SetState(nextState, showOsd);
@@ -199,6 +202,10 @@ void OnSettingChange(LPARAM lParam) {
         }
     }
     if (shouldSync) {
+        ULONGLONG now = GetTickCount64();
+        if (GetState() != 0 && (now - s_lastToggleTick > 2000)) {
+            ScheduleManager::ClearPowerDarkOverride();
+        }
         TrayIcon::SyncUI();
         OnSettingsThemeChanged();
         g_OverlayWindow.SyncWithSystem();

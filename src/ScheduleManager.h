@@ -9,6 +9,11 @@ void Init(HWND hWnd);
 void Uninit();
 void Tick();
 void Refresh();
+void CheckPowerRules(bool triggeredByToggleChange = false);
+void ClearPowerDarkOverride();
+void OnPowerResume();
+void OnPowerSavingBroadcast(bool enabled);
+void OnAcDcBroadcast(bool onBattery);
 
 struct TodaySunInfo {
     bool valid = false;

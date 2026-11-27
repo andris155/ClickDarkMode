@@ -40,6 +40,10 @@ static HANDLE s_hEvents[5] = { NULL, NULL, NULL, NULL, NULL };
 static HANDLE s_hStopEvent = NULL;
 static std::atomic<bool> s_ipcRunning{ false };
 static std::thread s_ipcThread;
+static HPOWERNOTIFY s_hPowerAcDc = NULL;
+static HPOWERNOTIFY s_hPowerSaving = NULL;
+static constexpr GUID kGuidAcDcPowerSource = { 0x5d3e9a59, 0xe9d5, 0x4b00, { 0xa6, 0xbd, 0xff, 0x34, 0xff, 0x51, 0x65, 0x48 } };
+static constexpr GUID kGuidPowerSavingStatus = { 0xe00958c0, 0xc213, 0x4ace, { 0xac, 0x77, 0xfe, 0xcc, 0xed, 0x2e, 0xee, 0xa5 } };
 
 static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -96,16 +100,48 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 
         case WM_POWERBROADCAST:
         {
-            if (wParam == PBT_APMRESUMEAUTOMATIC || wParam == PBT_APMRESUMESUSPEND)
+            if (wParam == PBT_POWERSETTINGCHANGE && lParam != 0)
             {
-                // Computer woke up from sleep or hibernation: immediately refresh schedules and theme
-                ScheduleManager::Refresh();
-                ScheduleManager::Tick();
+                const auto* pbs = reinterpret_cast<const POWERBROADCAST_SETTING*>(lParam);
+                if (pbs->DataLength >= sizeof(DWORD))
+                {
+                    DWORD val = *reinterpret_cast<const DWORD*>(pbs->Data);
+                    if (IsEqualGUID(pbs->PowerSetting, kGuidPowerSavingStatus))
+                    {
+                        ScheduleManager::OnPowerSavingBroadcast(val != 0);
+                    }
+                    else if (IsEqualGUID(pbs->PowerSetting, kGuidAcDcPowerSource))
+                    {
+                        // PoDc (1) = Battery power, PoAc (0) = AC power
+                        ScheduleManager::OnAcDcBroadcast(val == 1);
+                    }
+                }
+            }
+            else if (wParam == PBT_APMPOWERSTATUSCHANGE)
+            {
+                ScheduleManager::CheckPowerRules();
+            }
+            else if (wParam == PBT_APMRESUMEAUTOMATIC || wParam == PBT_APMRESUMESUSPEND)
+            {
+                // Computer woke up from sleep or hibernation: check power rules before refreshing schedules
+                ScheduleManager::OnPowerResume();
                 ThemeHelper::GetAccentColors(true);
                 ThemeManager::OnSettingChange(0);
                 SetTimer(hwnd, IDT_GPU_RESET_COOLDOWN, 500, NULL);
             }
             return TRUE;
+        }
+
+        case WM_APP + 10:
+        {
+            ScheduleManager::CheckPowerRules();
+            return 0;
+        }
+
+        case WM_APP + 11:
+        {
+            ScheduleManager::OnAcDcBroadcast(wParam != 0);
+            return 0;
         }
 
         case WM_APP_TRAYMSG:
@@ -132,9 +168,11 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
                 ThemeManager::Toggle();
                 break;
             case IDM_TRAY_DARK:
+                ScheduleManager::ClearPowerDarkOverride();
                 ThemeManager::SetState(0, g_Settings.osdHotkeyEnabled);
                 break;
             case IDM_TRAY_LIGHT:
+                ScheduleManager::ClearPowerDarkOverride();
                 ThemeManager::SetState(1, g_Settings.osdHotkeyEnabled);
                 break;
             case IDM_TRAY_SETTINGS:
@@ -231,6 +269,17 @@ void ExitApp()
     TrayIcon::CloseTrayMenu();
 
     // 3. Destroy message window
+    ScheduleManager::Uninit();
+    if (s_hPowerAcDc)
+    {
+        UnregisterPowerSettingNotification(s_hPowerAcDc);
+        s_hPowerAcDc = NULL;
+    }
+    if (s_hPowerSaving)
+    {
+        UnregisterPowerSettingNotification(s_hPowerSaving);
+        s_hPowerSaving = NULL;
+    }
     if (g_hMainWnd)
     {
         HWND h = g_hMainWnd;
@@ -298,6 +347,8 @@ namespace winrt::ThemeSwitcherApp::implementation
                 HotkeyManager::Register(g_hMainWnd);
                 g_OverlayWindow.Create();
                 ScheduleManager::Init(g_hMainWnd);
+                s_hPowerAcDc = RegisterPowerSettingNotification(g_hMainWnd, &kGuidAcDcPowerSource, DEVICE_NOTIFY_WINDOW_HANDLE);
+                s_hPowerSaving = RegisterPowerSettingNotification(g_hMainWnd, &kGuidPowerSavingStatus, DEVICE_NOTIFY_WINDOW_HANDLE);
             }
 
             // Setup IPC named events and dedicated termination event

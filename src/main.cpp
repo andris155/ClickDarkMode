@@ -57,6 +57,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     HANDLE hMutex = CreateMutexW(NULL, TRUE, L"ClickDarkMode_SingleInstance_Mutex");
     if (GetLastError() == ERROR_ALREADY_EXISTS)
     {
+        if (pCmdLine && (wcsstr(pCmdLine, L"--sim-battery") || wcsstr(pCmdLine, L"--sim-ac")))
+        {
+            HWND hExisting = FindWindowW(L"ClickDarkMode_MessageWndClass", NULL);
+            if (hExisting)
+            {
+                bool simBattery = (wcsstr(pCmdLine, L"--sim-battery") != nullptr);
+                PostMessageW(hExisting, WM_APP + 11, simBattery ? 1 : 0, 0);
+            }
+            if (hMutex) CloseHandle(hMutex);
+            return 0;
+        }
+
         const wchar_t* targetEvent = nullptr;
         if (pCmdLine && (wcsstr(pCmdLine, L"--dark") || wcsstr(pCmdLine, L"-d")))
         {

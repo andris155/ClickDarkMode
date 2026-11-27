@@ -56,6 +56,12 @@
   "Gen_OsdDnd": "Elrejtés Ne zavarjanak módban",
   "Gen_OsdDndDesc": "Ne jelenjen meg a képernyőn az OSD szalag, ha a Windows Ne zavarjanak vagy Fókuszsegéd aktív",
 
+  "Gen_PowerSection": "Tápellátás és akkumulátor",
+  "Gen_DarkOnBattery": "Sötét mód akkumulátorról",
+  "Gen_DarkOnBatteryDesc": "Váltás sötét módra, ha az eszköz csak akkumulátorról működik",
+  "Gen_DarkOnEnergySaver": "Sötét mód energiatakarékos módban",
+  "Gen_DarkOnEnergySaverDesc": "Váltás sötét módra, ha a Windows energiatakarékos mód be van kapcsolva",
+
   "Gen_StartupSection": "Indítás és karbantartás",
   "Gen_StartWithWindows": "Indítás a Windowssal",
   "Gen_StartWithWindowsDesc": "A ClickDarkMode automatikus indítása a Windows indulásakor",
@@ -110,6 +116,8 @@
   "Hk_ShowOsdDesc": "Lebegő értesítés megjelenítése gyorsbillentyűs váltáskor",
   "Hk_CombinationLabel": "Billentyűkombináció",
   "Hk_CombinationDesc": "Kattintson a gombra, majd nyomja le a kívánt billentyűkombinációt",
+  "Hk_ConflictTitle": "Billentyűparancs-ütközés",
+  "Hk_ConflictMsg": "Ezt a billentyűkombinációt már egy másik alkalmazás használja. Válasszon másikat.",
   "Hk_PressKey": "Nyomja le a billentyűt...",
   "Hk_PressAnyKey": "Nyomjon le egy billentyűt...",
   "Hk_ResetShortcutsTitle": "Gyorsbillentyűk alaphelyzetbe állítása",
@@ -118,7 +126,7 @@
 
   "About_HeaderTitle": "A ClickDarkMode névjegye",
   "About_HeaderSubtitle": "Könnyűsúlyú, modern Windows 11 témaváltó segédprogram",
-  "About_AppType": "Natív WinUI 3 / Windows App SDK 2.6 asztali alkalmazás",
+  "About_AppType": "Natív WinUI 3 asztali alkalmazás",
   "About_DescTitle": "Leírás",
   "About_DescContent": "Modern, könnyűsúlyú Windows 11 segédprogram a világos és sötét témák közötti azonnali váltáshoz alkalmazások és rendszerfelületek számára. Támogatja az egyéni tálcaikonokat, a véletlen kattintások elleni védelmet, a globális gyorsbillentyűket és az ultraalacsony háttérbeli memóriahasználatot.",
   "About_LicenseTitle": "Licenc",
