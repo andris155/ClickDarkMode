@@ -145,12 +145,7 @@ void SetState(int targetState, bool showOsd) {
                 &dwResult
             );
 
-            // 4. Asynchronous broadcast backup to guarantee delivery across all desktop windows
-            SendNotifyMessageW(HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)L"ImmersiveColorSet");
-            SendNotifyMessageW(HWND_BROADCAST, WM_THEMECHANGED, 0, 0);
-            SendNotifyMessageW(HWND_BROADCAST, WM_SYSCOLORCHANGE, 0, 0);
-
-            // 5. Directly target Task Manager (which uses both Win32 command bar and WinUI island)
+            // 4. Directly target Task Manager (which uses both Win32 command bar and WinUI island)
             EnumWindows([](HWND hWnd, LPARAM) -> BOOL {
                 wchar_t className[64] = { 0 };
                 if (GetClassNameW(hWnd, className, 64) && _wcsicmp(className, L"TaskManagerWindow") == 0) {

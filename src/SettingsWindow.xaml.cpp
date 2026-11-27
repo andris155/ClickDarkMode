@@ -199,8 +199,6 @@ namespace winrt::ThemeSwitcherApp::implementation
 
         if (m_hwnd)
         {
-            RemoveWindowSubclass(m_hwnd, SubclassProc, 1);
-
             bool isDark = ThemeHelper::IsAppInDarkMode(g_Settings.appTheme);
             BOOL darkMode = isDark ? TRUE : FALSE;
             DwmSetWindowAttribute(m_hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &darkMode, sizeof(darkMode));
@@ -2320,8 +2318,6 @@ namespace winrt::ThemeSwitcherApp::implementation
         this->Activate();
         if (m_hwnd)
         {
-            if (m_hIconBig) SendMessageW(m_hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(m_hIconBig));
-            if (m_hIconSmall) SendMessageW(m_hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(m_hIconSmall));
             SetForegroundWindow(m_hwnd);
         }
         UpdateTitleBarDragRegions();
@@ -2329,7 +2325,6 @@ namespace winrt::ThemeSwitcherApp::implementation
 
     void SettingsWindow::HideWindow()
     {
-        ApplyTheme();
         StopCapture(false);
         if (m_hwnd)
         {
