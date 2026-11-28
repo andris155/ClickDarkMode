@@ -235,44 +235,57 @@ void AppSettings::Load() {
 void AppSettings::Save() {
     std::wstring ini = Config::GetIniFilePath();
 
-    WritePrivateProfileStringW(L"Settings", L"Language", language.c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"AppTheme", std::to_wstring(appTheme).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"TrayMenuTheme", std::to_wstring(trayMenuTheme).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"TransparencyEnabled", transparencyEnabled ? L"1" : L"0", ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"Target", target.c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"ToggleDelayMs", std::to_wstring(toggleDelayMs).c_str(), ini.c_str());
+    std::wstring content;
+    content.reserve(1024);
+    content += L"\xFEFF"; // UTF-16LE BOM for GetPrivateProfile* Unicode support
+    content += L"[Settings]\r\n";
+    content += L"Language=" + language + L"\r\n";
+    content += L"AppTheme=" + std::to_wstring(appTheme) + L"\r\n";
+    content += L"TrayMenuTheme=" + std::to_wstring(trayMenuTheme) + L"\r\n";
+    content += L"TransparencyEnabled=" + std::wstring(transparencyEnabled ? L"1" : L"0") + L"\r\n";
+    content += L"Target=" + target + L"\r\n";
+    content += L"ToggleDelayMs=" + std::to_wstring(toggleDelayMs) + L"\r\n";
+    content += L"TrayIconMode=" + std::to_wstring(trayIconMode) + L"\r\n";
+    content += L"DualIcons=" + std::wstring(dualIcons ? L"1" : L"0") + L"\r\n";
+    content += L"IconFile=" + iconFile + L"\r\n";
+    content += L"IconNumber=" + std::to_wstring(iconNumber) + L"\r\n";
+    content += L"DarkIconFile=" + darkIconFile + L"\r\n";
+    content += L"DarkIconNumber=" + std::to_wstring(darkIconNumber) + L"\r\n";
+    content += L"Hotkey=" + hotkey + L"\r\n";
+    content += L"HotkeyEnabled=" + std::wstring(hotkeyEnabled ? L"1" : L"0") + L"\r\n";
+    content += L"ShowOsdOnHotkey=" + std::wstring(osdHotkeyEnabled ? L"1" : L"0") + L"\r\n";
+    content += L"ShowOsdOnTrayClick=" + std::wstring(osdIconClickEnabled ? L"1" : L"0") + L"\r\n";
+    content += L"OsdTimeoutMs=" + std::to_wstring(osdTimeoutMs) + L"\r\n";
+    content += L"OsdTheme=" + std::to_wstring(osdTheme) + L"\r\n";
+    content += L"SuppressOsdOnDoNotDisturb=" + std::wstring(osdSuppressOnDnd ? L"1" : L"0") + L"\r\n";
+    content += L"DarkOnBattery=" + std::wstring(darkOnBattery ? L"1" : L"0") + L"\r\n";
+    content += L"DarkOnEnergySaver=" + std::wstring(darkOnEnergySaver ? L"1" : L"0") + L"\r\n";
+    content += L"StartWithWindows=" + std::wstring(startWithWindows ? L"1" : L"0") + L"\r\n";
+    content += L"\r\n[Schedule]\r\n";
+    content += L"Mode=" + std::to_wstring(scheduleMode) + L"\r\n";
+    content += L"SunSource=" + std::to_wstring(scheduleSunSource) + L"\r\n";
+    content += L"LightHour=" + std::to_wstring(scheduleLightHour) + L"\r\n";
+    content += L"LightMinute=" + std::to_wstring(scheduleLightMinute) + L"\r\n";
+    content += L"DarkHour=" + std::to_wstring(scheduleDarkHour) + L"\r\n";
+    content += L"DarkMinute=" + std::to_wstring(scheduleDarkMinute) + L"\r\n";
+    content += L"Latitude=" + std::to_wstring(scheduleLatitude) + L"\r\n";
+    content += L"Longitude=" + std::to_wstring(scheduleLongitude) + L"\r\n";
+    content += L"SunriseOffset=" + std::to_wstring(scheduleSunriseOffset) + L"\r\n";
+    content += L"SunsetOffset=" + std::to_wstring(scheduleSunsetOffset) + L"\r\n";
+    content += L"ShowOsd=" + std::wstring(scheduleShowOsd ? L"1" : L"0") + L"\r\n";
 
-    WritePrivateProfileStringW(L"Settings", L"TrayIconMode", std::to_wstring(trayIconMode).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"DualIcons", dualIcons ? L"1" : L"0", ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"IconFile", iconFile.c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"IconNumber", std::to_wstring(iconNumber).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"DarkIconFile", darkIconFile.c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"DarkIconNumber", std::to_wstring(darkIconNumber).c_str(), ini.c_str());
+    static std::wstring s_lastSavedContent;
+    if (content != s_lastSavedContent || GetFileAttributesW(ini.c_str()) == INVALID_FILE_ATTRIBUTES) {
+        HANDLE hFile = CreateFileW(ini.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        if (hFile != INVALID_HANDLE_VALUE) {
+            DWORD bytesWritten = 0;
+            WriteFile(hFile, content.data(), static_cast<DWORD>(content.size() * sizeof(wchar_t)), &bytesWritten, NULL);
+            CloseHandle(hFile);
+            WritePrivateProfileStringW(NULL, NULL, NULL, ini.c_str()); // Flush Win32 INI cache
+            s_lastSavedContent = std::move(content);
+        }
+    }
 
-    WritePrivateProfileStringW(L"Settings", L"Hotkey", hotkey.c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"HotkeyEnabled", hotkeyEnabled ? L"1" : L"0", ini.c_str());
-
-    WritePrivateProfileStringW(L"Settings", L"ShowOsdOnHotkey", osdHotkeyEnabled ? L"1" : L"0", ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"ShowOsdOnTrayClick", osdIconClickEnabled ? L"1" : L"0", ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"OsdTimeoutMs", std::to_wstring(osdTimeoutMs).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"OsdTheme", std::to_wstring(osdTheme).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"SuppressOsdOnDoNotDisturb", osdSuppressOnDnd ? L"1" : L"0", ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"DarkOnBattery", darkOnBattery ? L"1" : L"0", ini.c_str());
-    WritePrivateProfileStringW(L"Settings", L"DarkOnEnergySaver", darkOnEnergySaver ? L"1" : L"0", ini.c_str());
-
-    WritePrivateProfileStringW(L"Schedule", L"Mode", std::to_wstring(scheduleMode).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"SunSource", std::to_wstring(scheduleSunSource).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"LightHour", std::to_wstring(scheduleLightHour).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"LightMinute", std::to_wstring(scheduleLightMinute).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"DarkHour", std::to_wstring(scheduleDarkHour).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"DarkMinute", std::to_wstring(scheduleDarkMinute).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"Latitude", std::to_wstring(scheduleLatitude).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"Longitude", std::to_wstring(scheduleLongitude).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"SunriseOffset", std::to_wstring(scheduleSunriseOffset).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"SunsetOffset", std::to_wstring(scheduleSunsetOffset).c_str(), ini.c_str());
-    WritePrivateProfileStringW(L"Schedule", L"ShowOsd", scheduleShowOsd ? L"1" : L"0", ini.c_str());
-
-    WritePrivateProfileStringW(L"Settings", L"StartWithWindows", startWithWindows ? L"1" : L"0", ini.c_str());
     if (Config::IsInstalledInProgramFiles()) {
         Config::SetStartWithWindows(startWithWindows);
     }
