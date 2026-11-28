@@ -197,6 +197,7 @@ void AppSettings::Load() {
     osdTheme = (int)GetPrivateProfileIntW(L"Settings", L"OsdTheme", 0, ini.c_str());
     if (osdTheme < 0 || osdTheme > 2) osdTheme = 0;
     osdSuppressOnDnd = (GetPrivateProfileIntW(L"Settings", L"SuppressOsdOnDoNotDisturb", 0, ini.c_str()) == 1);
+    osdAnimationEnabled = (GetPrivateProfileIntW(L"Settings", L"ShowOsdAnimation", 1, ini.c_str()) != 0);
 
     // Power & Battery
     darkOnBattery = (GetPrivateProfileIntW(L"Settings", L"DarkOnBattery", 0, ini.c_str()) == 1);
@@ -258,6 +259,7 @@ void AppSettings::Save() {
     content += L"OsdTimeoutMs=" + std::to_wstring(osdTimeoutMs) + L"\r\n";
     content += L"OsdTheme=" + std::to_wstring(osdTheme) + L"\r\n";
     content += L"SuppressOsdOnDoNotDisturb=" + std::wstring(osdSuppressOnDnd ? L"1" : L"0") + L"\r\n";
+    content += L"ShowOsdAnimation=" + std::wstring(osdAnimationEnabled ? L"1" : L"0") + L"\r\n";
     content += L"DarkOnBattery=" + std::wstring(darkOnBattery ? L"1" : L"0") + L"\r\n";
     content += L"DarkOnEnergySaver=" + std::wstring(darkOnEnergySaver ? L"1" : L"0") + L"\r\n";
     content += L"StartWithWindows=" + std::wstring(startWithWindows ? L"1" : L"0") + L"\r\n";

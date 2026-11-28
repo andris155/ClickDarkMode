@@ -715,6 +715,7 @@ namespace winrt::ThemeSwitcherApp::implementation
                 { g_Loc.Get(L"Gen_OsdTheme", L"OSD Theme"), catGen, L"osd theme appearance dark light banner lebegő téma", L"General", OsdThemeComboBox() },
                 { g_Loc.Get(L"Gen_OsdTimeoutTitle", L"Hide Time (ms)"), catGen, L"osd banner duration timeout hide time display lebegő eltűnési idő", L"General", OsdTimeoutSlider() },
                 { g_Loc.Get(L"Gen_OsdDnd", L"Suppress in Do Not Disturb"), catGen, L"osd dnd do not disturb focus assist quiet hours ne zavarjanak fókuszsegéd elrejtés banner", L"General", OsdDndToggle() },
+                { g_Loc.Get(L"Gen_OsdAnimation", L"Show OSD Animation"), catGen, L"osd animation slide instant pop animáció csúszás megjelenítés", L"General", OsdAnimationToggle() },
                 { g_Loc.Get(L"Gen_DarkOnBattery", L"Dark mode on battery"), catGen, L"battery power unplugged dark mode akkumulátor töltő sötét mód", L"General", DarkOnBatteryToggle() },
                 { g_Loc.Get(L"Gen_DarkOnEnergySaver", L"Dark mode on energy saver"), catGen, L"energy saver battery saver power saving dark mode energiatakarékos akkukímélő sötét mód", L"General", DarkOnEnergySaverToggle() },
                 { g_Loc.Get(L"Gen_StartWithWindows", L"Start with Windows"), catGen, L"startup boot autostart windows indítás indulás", L"General", StartupToggle() },
@@ -1017,6 +1018,15 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.Save();
         });
 
+        // OSD Animation Toggle
+        OsdAnimationToggle().Toggled([this](auto&&, auto&&)
+        {
+            if (m_isUpdatingUI) return;
+            g_Settings.osdAnimationEnabled = OsdAnimationToggle().IsOn();
+            OsdAnimationStatusText().Text(g_Loc.Get(g_Settings.osdAnimationEnabled ? L"Common_On" : L"Common_Off", g_Settings.osdAnimationEnabled ? L"On" : L"Off").c_str());
+            g_Settings.Save();
+        });
+
         // Dark Mode on Battery Toggle
         DarkOnBatteryToggle().Toggled([this](auto&&, auto&&)
         {
@@ -1081,6 +1091,7 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_Settings.osdTimeoutMs = 2000;
             g_Settings.osdTheme = 0;
             g_Settings.osdSuppressOnDnd = false;
+            g_Settings.osdAnimationEnabled = true;
             g_Settings.scheduleMode = 0;
             g_Settings.scheduleSunSource = 0;
             g_Settings.scheduleLightHour = 7;
@@ -1593,6 +1604,9 @@ namespace winrt::ThemeSwitcherApp::implementation
         OsdDndTitleText().Text(g_Loc.Get(L"Gen_OsdDnd", L"Suppress in Do Not Disturb"));
         OsdDndDescText().Text(g_Loc.Get(L"Gen_OsdDndDesc", L"Do not show on-screen display when Windows Do Not Disturb or Focus Assist is active"));
         OsdDndStatusText().Text(g_Loc.Get(OsdDndToggle().IsOn() ? L"Common_On" : L"Common_Off", OsdDndToggle().IsOn() ? L"On" : L"Off").c_str());
+        OsdAnimationTitleText().Text(g_Loc.Get(L"Gen_OsdAnimation", L"Show OSD Animation"));
+        OsdAnimationDescText().Text(g_Loc.Get(L"Gen_OsdAnimationDesc", L"Animate the on-screen display banner with a smooth slide effect"));
+        OsdAnimationStatusText().Text(g_Loc.Get(OsdAnimationToggle().IsOn() ? L"Common_On" : L"Common_Off", OsdAnimationToggle().IsOn() ? L"On" : L"Off").c_str());
 
         PowerSectionTitle().Text(g_Loc.Get(L"Gen_PowerSection", L"Power & Battery"));
         DarkOnBatteryTitleText().Text(g_Loc.Get(L"Gen_DarkOnBattery", L"Dark mode on battery"));
@@ -1819,6 +1833,10 @@ namespace winrt::ThemeSwitcherApp::implementation
         // OSD Do Not Disturb
         OsdDndToggle().IsOn(g_Settings.osdSuppressOnDnd);
         OsdDndStatusText().Text(g_Loc.Get(g_Settings.osdSuppressOnDnd ? L"Common_On" : L"Common_Off", g_Settings.osdSuppressOnDnd ? L"On" : L"Off").c_str());
+
+        // OSD Animation
+        OsdAnimationToggle().IsOn(g_Settings.osdAnimationEnabled);
+        OsdAnimationStatusText().Text(g_Loc.Get(g_Settings.osdAnimationEnabled ? L"Common_On" : L"Common_Off", g_Settings.osdAnimationEnabled ? L"On" : L"Off").c_str());
 
         // Power & Battery
         DarkOnBatteryToggle().IsOn(g_Settings.darkOnBattery);

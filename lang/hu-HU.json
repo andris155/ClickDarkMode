@@ -55,6 +55,8 @@
   "Gen_OsdTimeoutDesc": "Lebegő visszajelző sáv automatikus eltűnési ideje",
   "Gen_OsdDnd": "Elrejtés Ne zavarjanak módban",
   "Gen_OsdDndDesc": "Ne jelenjen meg a képernyőn az OSD szalag, ha a Windows Ne zavarjanak vagy Fókuszsegéd aktív",
+  "Gen_OsdAnimation": "OSD animáció megjelenítése",
+  "Gen_OsdAnimationDesc": "Az értesítősáv megjelenítése és elrejtése finom csúszó animációval",
 
   "Gen_PowerSection": "Tápellátás és akkumulátor",
   "Gen_DarkOnBattery": "Sötét mód akkumulátorról",

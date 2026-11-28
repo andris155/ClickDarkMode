@@ -55,6 +55,8 @@
   "Gen_OsdTimeoutDesc": "Auto-hide timeout for on-screen banner overlay",
   "Gen_OsdDnd": "Suppress in Do Not Disturb",
   "Gen_OsdDndDesc": "Do not show on-screen display when Windows Do Not Disturb or Focus Assist is active",
+  "Gen_OsdAnimation": "Show OSD Animation",
+  "Gen_OsdAnimationDesc": "Animate the on-screen display banner with a smooth slide effect",
 
   "Gen_PowerSection": "Power & Battery",
   "Gen_DarkOnBattery": "Dark mode on battery",

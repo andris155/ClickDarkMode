@@ -24,6 +24,9 @@
 
 namespace winrt::ThemeSwitcherApp::implementation
 {
+    static constexpr int kOsdWidthDip = 160;
+    static constexpr int kOsdHeightDip = 48;
+
     static bool DetermineOsdIsDark(int themeState)
     {
         if (g_Settings.osdTheme == 1) return true;  // Dark
@@ -43,26 +46,32 @@ namespace winrt::ThemeSwitcherApp::implementation
         UpdateContent(m_displayedState, m_displayedTarget);
         UpdateTheme(isDark);
 
-        // Pre-warm layout and DirectX composition offscreen at startup (ClickBrightness architecture)
-        // Kept at (-32000, -32000) so the DirectX swapchain and D3D backbuffer remain warm in GPU VRAM
+        // Pre-warm layout and DirectX composition while cloaked on the primary monitor at startup
+        // Keeping the window on the primary monitor ensures it always uses the primary display's DPI
         if (m_hwnd)
         {
-            POINT ptCursor = { 0, 0 };
-            GetCursorPos(&ptCursor);
-            HMONITOR hMon = MonitorFromPoint(ptCursor, MONITOR_DEFAULTTOPRIMARY);
+            POINT ptOrigin = { 0, 0 };
+            HMONITOR hMon = MonitorFromPoint(ptOrigin, MONITOR_DEFAULTTOPRIMARY);
             UINT dpi = DpiHelper::GetDpiForMonitor(hMon);
             if (dpi == 0) dpi = GetDpiForSystem();
             if (dpi == 0) dpi = 96;
 
-            int width = DpiHelper::Scale(160, dpi);
-            int height = DpiHelper::Scale(48, dpi);
+            int width = DpiHelper::Scale(kOsdWidthDip, dpi);
+            int height = DpiHelper::Scale(kOsdHeightDip, dpi);
             m_lastW = width;
             m_lastH = height;
+
+            MONITORINFO mi = { sizeof(mi) };
+            GetMonitorInfoW(hMon, &mi);
+            int marginBottom = DpiHelper::Scale(16, dpi);
+            int workW = mi.rcWork.right - mi.rcWork.left;
+            int targetX = mi.rcWork.left + (workW - width) / 2;
+            int targetY = mi.rcWork.bottom - height - marginBottom;
 
             BOOL cloak = TRUE;
             DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
             HWND hPrevForeground = GetForegroundWindow();
-            SetWindowPos(m_hwnd, NULL, -32000, -32000, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW);
+            SetWindowPos(m_hwnd, NULL, targetX, targetY, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW);
             this->Activate();
             RootGrid().UpdateLayout();
             if (hPrevForeground && hPrevForeground != m_hwnd)
@@ -296,6 +305,22 @@ namespace winrt::ThemeSwitcherApp::implementation
         DetachBackdrop();
         SetupBackdrop(isDark);
         UpdateTheme(isDark);
+        if (m_hwnd)
+        {
+            HMONITOR hMon = MonitorFromPoint({ 0, 0 }, MONITOR_DEFAULTTOPRIMARY);
+            UINT dpi = DpiHelper::GetDpiForMonitor(hMon);
+            if (dpi == 0) dpi = GetDpiForWindow(m_hwnd);
+            if (dpi == 0) dpi = 96;
+            int width = DpiHelper::Scale(kOsdWidthDip, dpi);
+            int height = DpiHelper::Scale(kOsdHeightDip, dpi);
+            if (m_lastW != width || m_lastH != height)
+            {
+                m_lastW = width;
+                m_lastH = height;
+                SetWindowPos(m_hwnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+            }
+            RootGrid().UpdateLayout();
+        }
     }
 
     void OverlayWindow::UpdateContent(int themeState, const std::wstring& target)
@@ -333,9 +358,8 @@ namespace winrt::ThemeSwitcherApp::implementation
     {
         if (!m_hwnd || !m_appWindow) return;
 
-        POINT ptCursor;
-        GetCursorPos(&ptCursor);
-        HMONITOR hMon = MonitorFromPoint(ptCursor, MONITOR_DEFAULTTONEAREST);
+        POINT ptOrigin = { 0, 0 };
+        HMONITOR hMon = MonitorFromPoint(ptOrigin, MONITOR_DEFAULTTOPRIMARY);
         MONITORINFO mi = { sizeof(mi) };
         GetMonitorInfoW(hMon, &mi);
 
@@ -351,26 +375,13 @@ namespace winrt::ThemeSwitcherApp::implementation
         int targetX = mi.rcWork.left + (workW - width) / 2;
         int targetY = mi.rcWork.bottom - height - marginBottom;
 
-        // Place right behind the monitor's taskbar in topmost Z-order so it emerges from under it
+        // Place right behind the main display's taskbar in topmost Z-order so it emerges from under it
         HWND hInsertAfter = HWND_TOPMOST;
         HWND hTray = FindWindowW(L"Shell_TrayWnd", NULL);
         if (hTray && MonitorFromWindow(hTray, MONITOR_DEFAULTTONEAREST) == hMon &&
             (GetWindowLongPtrW(hTray, GWL_EXSTYLE) & WS_EX_TOPMOST))
         {
             hInsertAfter = hTray;
-        }
-        else
-        {
-            HWND hSecTray = NULL;
-            while ((hSecTray = FindWindowExW(NULL, hSecTray, L"Shell_SecondaryTrayWnd", NULL)) != NULL)
-            {
-                if (MonitorFromWindow(hSecTray, MONITOR_DEFAULTTONEAREST) == hMon &&
-                    (GetWindowLongPtrW(hSecTray, GWL_EXSTYLE) & WS_EX_TOPMOST))
-                {
-                    hInsertAfter = hSecTray;
-                    break;
-                }
-            }
         }
 
         bool sizeChanged = (m_lastW != width || m_lastH != height);
@@ -390,13 +401,13 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             BOOL cloak = TRUE;
             DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
-            m_currentY = targetY + m_slideOffset;
-            SetWindowPos(m_hwnd, hInsertAfter, targetX, m_currentY, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW);
+            m_currentY = g_Settings.osdAnimationEnabled ? (targetY + m_slideOffset) : targetY;
+            SetWindowPos(m_hwnd, hInsertAfter, targetX, m_currentY, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOCOPYBITS);
             RootGrid().UpdateLayout();
             UINT uncloakDelay = waitExtra ? 100 : 16;
             SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, uncloakDelay, NULL);
             m_isVisible = true;
-            m_animState = AnimState::Showing;
+            m_animState = g_Settings.osdAnimationEnabled ? AnimState::Showing : AnimState::None;
         }
         else if (m_animState == AnimState::Hiding)
         {
@@ -596,7 +607,6 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             BOOL cloak = TRUE;
             DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
-            SetWindowPos(m_hwnd, NULL, -32000, -32000, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
         }
 
         // Immediately pre-arm the hidden overlay with the NEXT expected theme,
@@ -615,7 +625,14 @@ namespace winrt::ThemeSwitcherApp::implementation
 
         if (m_isVisible)
         {
-            StartHideAnimation();
+            if (g_Settings.osdAnimationEnabled)
+            {
+                StartHideAnimation();
+            }
+            else
+            {
+                FinishHide();
+            }
         }
     }
 
@@ -686,10 +703,28 @@ namespace winrt::ThemeSwitcherApp::implementation
                 {
                     BOOL cloak = FALSE;
                     DwmSetWindowAttribute(hWnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
-                    pThis->StartShowAnimation();
+                    if (g_Settings.osdAnimationEnabled)
+                    {
+                        pThis->StartShowAnimation();
+                    }
                 }
                 return 0;
             }
+        }
+
+        if (uMsg == WM_DPICHANGED && !pThis->m_isVisible)
+        {
+            HMONITOR hMon = MonitorFromPoint({ 0, 0 }, MONITOR_DEFAULTTOPRIMARY);
+            UINT dpi = DpiHelper::GetDpiForMonitor(hMon);
+            if (dpi == 0) dpi = HIWORD(wParam);
+            if (dpi == 0) dpi = 96;
+            int width = DpiHelper::Scale(kOsdWidthDip, dpi);
+            int height = DpiHelper::Scale(kOsdHeightDip, dpi);
+            pThis->m_lastW = width;
+            pThis->m_lastH = height;
+            SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+            pThis->RootGrid().UpdateLayout();
+            return 0;
         }
 
         if (uMsg == WM_NCDESTROY)
