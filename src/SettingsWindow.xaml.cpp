@@ -451,7 +451,6 @@ namespace winrt::ThemeSwitcherApp::implementation
             if (wbLight) LightIconImage().Source(wbLight);
             DestroyIcon(hLight);
         }
-        LightIconNameText().Text(FormatIconLabel(g_Settings.iconFile, g_Settings.iconNumber).c_str());
 
         // Dark icon preview
         HICON hDark = TrayIcon::LoadIconResource(g_Settings.darkIconFile, g_Settings.darkIconNumber, 32, 32);
@@ -461,7 +460,6 @@ namespace winrt::ThemeSwitcherApp::implementation
             if (wbDark) DarkIconImage().Source(wbDark);
             DestroyIcon(hDark);
         }
-        DarkIconNameText().Text(FormatIconLabel(g_Settings.darkIconFile, g_Settings.darkIconNumber).c_str());
 
         UpdatePresetComboBoxSelections();
     }
@@ -475,7 +473,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         size_t slash = pLower.find_last_of(L"\\/");
         std::wstring fname = (slash != std::wstring::npos) ? pLower.substr(slash + 1) : pLower;
 
-        int lightIdx = -1;
+        int lightIdx = 5; // "Custom File..."
         if (fname == L"sun.ico") lightIdx = 0;
         else if (fname == L"sun-white.ico" || fname == L"sun-icon-white.ico") lightIdx = 1;
         else if (fname == L"sun-dark.ico" || fname == L"sun-icon-black.ico" || fname == L"sun-black.ico") lightIdx = 2;
@@ -489,7 +487,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         size_t dslash = dpLower.find_last_of(L"\\/");
         std::wstring dfname = (dslash != std::wstring::npos) ? dpLower.substr(dslash + 1) : dpLower;
 
-        int darkIdx = -1;
+        int darkIdx = 4; // "Custom File..."
         if (dfname == L"moon.ico") darkIdx = 0;
         else if (dfname == L"moon-white.ico" || dfname == L"moon-icon-white.ico") darkIdx = 1;
         else if (dfname == L"moon-dark.ico" || dfname == L"moon-icon-black.ico" || dfname == L"moon-black.ico") darkIdx = 2;
@@ -510,12 +508,13 @@ namespace winrt::ThemeSwitcherApp::implementation
         auto customVis = isCustom ? Visibility::Visible : Visibility::Collapsed;
         LightIconSectionTitle().Visibility(customVis);
         LightIconCard().Visibility(customVis);
-        LightPresetsCard().Visibility(customVis);
+        LightIconTitleText().Text(g_Settings.dualIcons
+            ? g_Loc.Get(L"Icon_LightModeIcon", L"Light Mode Icon")
+            : g_Loc.Get(L"Icon_CustomIcon", L"Custom Icon"));
 
         auto darkVis = (isCustom && g_Settings.dualIcons) ? Visibility::Visible : Visibility::Collapsed;
         DarkIconSectionTitle().Visibility(darkVis);
         DarkIconCard().Visibility(darkVis);
-        DarkPresetsCard().Visibility(darkVis);
     }
 
     void SettingsWindow::UpdateDarkIconVisibility()
@@ -725,10 +724,8 @@ namespace winrt::ThemeSwitcherApp::implementation
                 { g_Loc.Get(L"Icon_TrayIconMode", L"Tray Icon"), catTray, L"tray icon mode appearance follow windows custom disabled tálcaikon megjelenés követés egyéni letiltva", L"Tray", TrayIconModeComboBox() },
                 { g_Loc.Get(L"Icon_DualCheckbox", L"Use Separate Icons"), catTray, L"dual separate distinct icons külön ikon tálcaikon", L"Tray", DualIconsToggle() },
                 { g_Loc.Get(L"Icon_ShowOsd", L"Show On-Screen Display (OSD)"), catTray, L"tray osd overlay banner floating visual feedback lebegő visszajelzés kijelző", L"Tray", TrayOsdToggle() },
-                { g_Loc.Get(L"Icon_LightGroup", L"Light / Primary Mode Icon"), catTray, L"light icon browse sun világos ikon nap ico választás", L"Tray", BrowseLightIconButton() },
-                { g_Loc.Get(L"Icon_LightPresetsTitle", L"Light Mode Presets"), catTray, L"preset light sun white dark star monitor nap fehér sötét csillag monitor", L"Tray", LightPresetComboBox() },
-                { g_Loc.Get(L"Icon_DarkGroup", L"Dark Mode Icon"), catTray, L"dark icon browse moon sötét ikon hold választás", L"Tray", BrowseDarkIconButton() },
-                { g_Loc.Get(L"Icon_DarkPresetsTitle", L"Dark Mode Presets"), catTray, L"preset dark moon white dark crescent monitor hold fehér sötét félhold", L"Tray", DarkPresetComboBox() },
+                { g_Loc.Get(L"Icon_LightGroup", L"Light Mode Icon"), catTray, L"light icon browse preset sun white dark star monitor nap fehér sötét csillag monitor ico választás", L"Tray", LightPresetComboBox() },
+                { g_Loc.Get(L"Icon_DarkGroup", L"Dark Mode Icon"), catTray, L"dark icon browse preset moon white dark crescent monitor hold fehér sötét félhold ico választás", L"Tray", DarkPresetComboBox() },
 
                 // Shortcuts
                 { g_Loc.Get(L"Hk_EnableCheckbox", L"Enable Global Shortcut"), catSc, L"hotkey shortcut global enable gyorsbillentyű engedélyezés billentyű", L"Shortcuts", HotkeyToggle() },
@@ -1156,31 +1153,41 @@ namespace winrt::ThemeSwitcherApp::implementation
             g_OverlayWindow.SyncWithSystem();
         });
 
-        // Browse Light Icon (defaults to %SystemRoot%\System32\SHELL32.dll if bundled or empty)
-        BrowseLightIconButton().Click([this](auto&&, auto&&)
+        auto browseCustomIcon = [this](bool isDark)
         {
-            std::wstring file = g_Settings.iconFile;
-            int num = g_Settings.iconNumber;
+            std::wstring& targetFile = isDark ? g_Settings.darkIconFile : g_Settings.iconFile;
+            int& targetNum = isDark ? g_Settings.darkIconNumber : g_Settings.iconNumber;
+            std::wstring file = targetFile;
+            int num = targetNum;
             if (TrayIcon::IsBundledIcon(file) || file.empty())
             {
                 wchar_t sysDir[MAX_PATH] = { 0 };
                 GetSystemDirectoryW(sysDir, MAX_PATH);
                 file = std::wstring(sysDir) + L"\\SHELL32.dll";
-                num = 44;
+                num = isDark ? 26 : 44;
             }
             if (TrayIcon::PickIcon(m_hwnd, file, num))
             {
-                g_Settings.iconFile = file;
-                g_Settings.iconNumber = num;
+                targetFile = file;
+                targetNum = num;
                 g_Settings.Save();
                 UpdateIconPreviews();
-                UpdatePresetComboBoxSelections();
                 TrayIcon::SyncUI();
             }
+            else
+            {
+                UpdatePresetComboBoxSelections();
+            }
+        };
+
+        // Browse Light Icon (defaults to %SystemRoot%\System32\SHELL32.dll if bundled or empty)
+        BrowseLightIconButton().Click([browseCustomIcon](auto&&, auto&&)
+        {
+            browseCustomIcon(false);
         });
 
         // Preset Light Icons ComboBox
-        LightPresetComboBox().SelectionChanged([this](auto&&, auto&&)
+        LightPresetComboBox().SelectionChanged([this, browseCustomIcon](auto&&, auto&&)
         {
             if (m_isUpdatingUI) return;
             int idx = LightPresetComboBox().SelectedIndex();
@@ -1213,6 +1220,11 @@ namespace winrt::ThemeSwitcherApp::implementation
                 g_Settings.iconFile = std::wstring(sysDir) + L"\\SHELL32.dll";
                 g_Settings.iconNumber = 16;
             }
+            else if (idx == 5) // Custom File...
+            {
+                browseCustomIcon(false);
+                return;
+            }
             else
             {
                 return;
@@ -1223,30 +1235,13 @@ namespace winrt::ThemeSwitcherApp::implementation
         });
 
         // Browse Dark Icon (defaults to %SystemRoot%\System32\SHELL32.dll if bundled or empty)
-        BrowseDarkIconButton().Click([this](auto&&, auto&&)
+        BrowseDarkIconButton().Click([browseCustomIcon](auto&&, auto&&)
         {
-            std::wstring file = g_Settings.darkIconFile;
-            int num = g_Settings.darkIconNumber;
-            if (TrayIcon::IsBundledIcon(file) || file.empty())
-            {
-                wchar_t sysDir[MAX_PATH] = { 0 };
-                GetSystemDirectoryW(sysDir, MAX_PATH);
-                file = std::wstring(sysDir) + L"\\SHELL32.dll";
-                num = 26;
-            }
-            if (TrayIcon::PickIcon(m_hwnd, file, num))
-            {
-                g_Settings.darkIconFile = file;
-                g_Settings.darkIconNumber = num;
-                g_Settings.Save();
-                UpdateIconPreviews();
-                UpdatePresetComboBoxSelections();
-                TrayIcon::SyncUI();
-            }
+            browseCustomIcon(true);
         });
 
         // Preset Dark Icons ComboBox
-        DarkPresetComboBox().SelectionChanged([this](auto&&, auto&&)
+        DarkPresetComboBox().SelectionChanged([this, browseCustomIcon](auto&&, auto&&)
         {
             if (m_isUpdatingUI) return;
             int idx = DarkPresetComboBox().SelectedIndex();
@@ -1271,6 +1266,11 @@ namespace winrt::ThemeSwitcherApp::implementation
                 GetSystemDirectoryW(sysDir, MAX_PATH);
                 g_Settings.darkIconFile = std::wstring(sysDir) + L"\\SHELL32.dll";
                 g_Settings.darkIconNumber = 26;
+            }
+            else if (idx == 4) // Custom File...
+            {
+                browseCustomIcon(true);
+                return;
             }
             else
             {
@@ -1648,28 +1648,30 @@ namespace winrt::ThemeSwitcherApp::implementation
         DualIconsDescText().Text(g_Loc.Get(L"Icon_DualDesc", L"Display distinct tray icons for Light and Dark modes to indicate current status"));
         TrayOsdTitleText().Text(g_Loc.Get(L"Icon_ShowOsd", L"Show On-Screen Display (OSD)"));
         TrayOsdDescText().Text(g_Loc.Get(L"Icon_ShowOsdDesc", L"Display a floating notification banner when clicking the tray icon"));
-        LightIconSectionTitle().Text(g_Loc.Get(L"Icon_LightGroup", L"Light / Primary Mode Icon"));
-        LightIconPathText().Text(g_Loc.Get(L"Icon_LightDesc", L"Primary icon representing Light theme mode"));
+        LightIconSectionTitle().Text(g_Loc.Get(L"Icon_LightGroup", L"Light Mode Icon"));
+        LightIconTitleText().Text(g_Settings.dualIcons
+            ? g_Loc.Get(L"Icon_LightModeIcon", L"Light Mode Icon")
+            : g_Loc.Get(L"Icon_CustomIcon", L"Custom Icon"));
+        LightIconPathText().Text(g_Loc.Get(L"Icon_LightDesc", L"Choose a preset icon or browse for a custom icon file"));
         BrowseLightIconButton().Content(winrt::box_value(g_Loc.Get(L"Icon_Browse", L"Browse...")));
-        LightPresetsTitleText().Text(g_Loc.Get(L"Icon_LightPresetsTitle", L"Light Mode Presets"));
-        LightPresetsDescText().Text(g_Loc.Get(L"Icon_LightPresetsDesc", L"Quickly choose from built-in or standard Windows light mode icons"));
         LightPresetComboBox().PlaceholderText(g_Loc.Get(L"Icon_SelectPreset", L"Select preset..."));
         LightPresetItemSun().Content(winrt::box_value(g_Loc.Get(L"Icon_Sun", L"Sun")));
         LightPresetItemSunWhite().Content(winrt::box_value(g_Loc.Get(L"Icon_SunWhite", L"Sun (White)")));
         LightPresetItemSunDark().Content(winrt::box_value(g_Loc.Get(L"Icon_SunDark", L"Sun (Dark)")));
         LightPresetItemStar().Content(winrt::box_value(g_Loc.Get(L"Icon_Star", L"Star")));
         LightPresetItemMonitor().Content(winrt::box_value(g_Loc.Get(L"Icon_Monitor", L"Monitor")));
+        LightPresetItemCustom().Content(winrt::box_value(g_Loc.Get(L"Icon_CustomFile", L"Custom File...")));
 
         DarkIconSectionTitle().Text(g_Loc.Get(L"Icon_DarkGroup", L"Dark Mode Icon"));
-        DarkIconPathText().Text(g_Loc.Get(L"Icon_DarkDesc", L"Icon representing Dark theme mode"));
+        DarkIconTitleText().Text(g_Loc.Get(L"Icon_DarkGroup", L"Dark Mode Icon"));
+        DarkIconPathText().Text(g_Loc.Get(L"Icon_DarkDesc", L"Choose a preset icon or browse for a custom icon file in dark mode"));
         BrowseDarkIconButton().Content(winrt::box_value(g_Loc.Get(L"Icon_Browse", L"Browse...")));
-        DarkPresetsTitleText().Text(g_Loc.Get(L"Icon_DarkPresetsTitle", L"Dark Mode Presets"));
-        DarkPresetsDescText().Text(g_Loc.Get(L"Icon_DarkPresetsDesc", L"Quickly choose from built-in or standard Windows dark mode icons"));
         DarkPresetComboBox().PlaceholderText(g_Loc.Get(L"Icon_SelectPreset", L"Select preset..."));
         DarkPresetItemMoon().Content(winrt::box_value(g_Loc.Get(L"Icon_Moon", L"Moon")));
         DarkPresetItemMoonWhite().Content(winrt::box_value(g_Loc.Get(L"Icon_MoonWhite", L"Moon (White)")));
         DarkPresetItemMoonDark().Content(winrt::box_value(g_Loc.Get(L"Icon_MoonDark", L"Moon (Dark)")));
         DarkPresetItemMonitorDark().Content(winrt::box_value(g_Loc.Get(L"Icon_MonitorDark", L"Monitor (Dark)")));
+        DarkPresetItemCustom().Content(winrt::box_value(g_Loc.Get(L"Icon_CustomFile", L"Custom File...")));
 
         ShortcutsHeaderTitle().Text(g_Loc.Get(L"Hk_HeaderTitle", L"Shortcut Settings"));
         ShortcutsHeaderSubtitle().Text(g_Loc.Get(L"Hk_HeaderSubtitle", L"Configure global keyboard shortcuts to toggle theme anywhere"));

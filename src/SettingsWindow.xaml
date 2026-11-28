@@ -541,7 +541,7 @@
                             </Border>
 
                             <!-- SECTION: LIGHT / PRIMARY MODE ICON -->
-                            <TextBlock x:Name="LightIconSectionTitle" Text="Light / Primary Mode Icon" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
+                            <TextBlock x:Name="LightIconSectionTitle" Text="Light Mode Icon" FontSize="14" FontWeight="SemiBold" Margin="0,18,0,6"/>
 
                             <!-- Light Icon Card -->
                             <Border x:Name="LightIconCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -555,35 +555,20 @@
                                     </Grid.ColumnDefinitions>
                                     <Image x:Name="LightIconImage" Width="32" Height="32" Margin="0,0,16,0" VerticalAlignment="Center"/>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
-                                        <TextBlock x:Name="LightIconNameText" Text="sun.ico (Bundled)" FontSize="14" FontWeight="Normal"/>
-                                        <TextBlock x:Name="LightIconPathText" Text="Primary icon representing Light theme mode" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        <TextBlock x:Name="LightIconTitleText" Text="Light Mode Icon" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="LightIconPathText" Text="Choose a preset icon or browse for a custom icon file" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <Button x:Name="BrowseLightIconButton" Grid.Column="2" Content="Browse..." VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-
-                            <!-- Light Presets Card -->
-                            <Border x:Name="LightPresetsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <FontIcon Glyph="&#xE706;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
-                                        <TextBlock x:Name="LightPresetsTitleText" Text="Light Mode Presets" FontSize="14" FontWeight="Normal"/>
-                                        <TextBlock x:Name="LightPresetsDescText" Text="Quickly choose from built-in or standard Windows light mode icons" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <ComboBox x:Name="LightPresetComboBox" Width="165" VerticalAlignment="Center" PlaceholderText="Select preset...">
+                                            <ComboBoxItem x:Name="LightPresetItemSun" Content="Sun" Tag="0"/>
+                                            <ComboBoxItem x:Name="LightPresetItemSunWhite" Content="Sun (White)" Tag="1"/>
+                                            <ComboBoxItem x:Name="LightPresetItemSunDark" Content="Sun (Dark)" Tag="2"/>
+                                            <ComboBoxItem x:Name="LightPresetItemStar" Content="Star" Tag="3"/>
+                                            <ComboBoxItem x:Name="LightPresetItemMonitor" Content="Monitor" Tag="4"/>
+                                            <ComboBoxItem x:Name="LightPresetItemCustom" Content="Custom File..." Tag="5"/>
+                                        </ComboBox>
+                                        <Button x:Name="BrowseLightIconButton" Content="Browse..." VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <ComboBox x:Name="LightPresetComboBox" Grid.Column="2" Width="160" VerticalAlignment="Center" PlaceholderText="Select preset...">
-                                        <ComboBoxItem x:Name="LightPresetItemSun" Content="Sun" Tag="0"/>
-                                        <ComboBoxItem x:Name="LightPresetItemSunWhite" Content="Sun (White)" Tag="1"/>
-                                        <ComboBoxItem x:Name="LightPresetItemSunDark" Content="Sun (Dark)" Tag="2"/>
-                                        <ComboBoxItem x:Name="LightPresetItemStar" Content="Star" Tag="3"/>
-                                        <ComboBoxItem x:Name="LightPresetItemMonitor" Content="Monitor" Tag="4"/>
-                                    </ComboBox>
                                 </Grid>
                             </Border>
 
@@ -602,34 +587,19 @@
                                     </Grid.ColumnDefinitions>
                                     <Image x:Name="DarkIconImage" Width="32" Height="32" Margin="0,0,16,0" VerticalAlignment="Center"/>
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
-                                        <TextBlock x:Name="DarkIconNameText" Text="moon.ico (Bundled)" FontSize="14" FontWeight="Normal"/>
-                                        <TextBlock x:Name="DarkIconPathText" Text="Icon representing Dark theme mode" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                        <TextBlock x:Name="DarkIconTitleText" Text="Dark Mode Icon" FontSize="14" FontWeight="Normal"/>
+                                        <TextBlock x:Name="DarkIconPathText" Text="Choose a preset icon or browse for a custom icon file in dark mode" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                    <Button x:Name="BrowseDarkIconButton" Grid.Column="2" Content="Browse..." VerticalAlignment="Center"/>
-                                </Grid>
-                            </Border>
-
-                            <!-- Dark Presets Card -->
-                            <Border x:Name="DarkPresetsCard" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                    BorderThickness="1" CornerRadius="4" Padding="16,12,16,12" Margin="0,0,0,4">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <FontIcon Glyph="&#xE708;" FontSize="16" Width="20" Height="20" Margin="0,0,16,0" VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
-                                        <TextBlock x:Name="DarkPresetsTitleText" Text="Dark Mode Presets" FontSize="14" FontWeight="Normal"/>
-                                        <TextBlock x:Name="DarkPresetsDescText" Text="Quickly choose from built-in or standard Windows dark mode icons" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                        <ComboBox x:Name="DarkPresetComboBox" Width="165" VerticalAlignment="Center" PlaceholderText="Select preset...">
+                                            <ComboBoxItem x:Name="DarkPresetItemMoon" Content="Moon" Tag="0"/>
+                                            <ComboBoxItem x:Name="DarkPresetItemMoonWhite" Content="Moon (White)" Tag="1"/>
+                                            <ComboBoxItem x:Name="DarkPresetItemMoonDark" Content="Moon (Dark)" Tag="2"/>
+                                            <ComboBoxItem x:Name="DarkPresetItemMonitorDark" Content="Monitor (Dark)" Tag="3"/>
+                                            <ComboBoxItem x:Name="DarkPresetItemCustom" Content="Custom File..." Tag="4"/>
+                                        </ComboBox>
+                                        <Button x:Name="BrowseDarkIconButton" Content="Browse..." VerticalAlignment="Center"/>
                                     </StackPanel>
-                                    <ComboBox x:Name="DarkPresetComboBox" Grid.Column="2" Width="160" VerticalAlignment="Center" PlaceholderText="Select preset...">
-                                        <ComboBoxItem x:Name="DarkPresetItemMoon" Content="Moon" Tag="0"/>
-                                        <ComboBoxItem x:Name="DarkPresetItemMoonWhite" Content="Moon (White)" Tag="1"/>
-                                        <ComboBoxItem x:Name="DarkPresetItemMoonDark" Content="Moon (Dark)" Tag="2"/>
-                                        <ComboBoxItem x:Name="DarkPresetItemMonitorDark" Content="Monitor (Dark)" Tag="3"/>
-                                    </ComboBox>
                                 </Grid>
                             </Border>
 
