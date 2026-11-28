@@ -14,11 +14,11 @@ namespace winrt::ThemeSwitcherApp::implementation
         ~OverlayWindow();
 
         void Show(int themeState, const std::wstring& target);
-        void UpdateContent(int themeState, const std::wstring& target);
-        void UpdateTheme(bool isDark);
+        bool UpdateContent(int themeState, const std::wstring& target);
+        bool UpdateTheme(bool isDark);
         void ResetGraphics();
         void RefreshOnDisplayChange();
-        void PositionWindow(bool waitExtra = false);
+        void PositionWindow();
         void PreArm(int nextExpectedState, const std::wstring& target);
         void SyncWithSystem();
         void HideWindow();
@@ -49,6 +49,9 @@ namespace winrt::ThemeSwitcherApp::implementation
 
         int m_lastTheme{ -1 };
         int m_lastTransparency{ -1 };
+        int m_contentState{ -1 };
+        std::wstring m_contentTarget;
+        std::wstring m_contentLang;
         int m_lastX{ -999999 };
         int m_lastY{ -999999 };
         int m_lastW{ 0 };

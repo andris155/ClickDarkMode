@@ -227,8 +227,18 @@ namespace winrt::ThemeSwitcherApp::implementation
         }
     }
 
-    void OverlayWindow::UpdateTheme(bool isDark)
+    bool OverlayWindow::UpdateTheme(bool isDark)
     {
+        int curTheme = isDark ? 1 : 0;
+        int curTrans = g_Settings.transparencyEnabled ? 1 : 0;
+        if (m_lastTheme == curTheme && m_lastTransparency == curTrans)
+        {
+            return false;
+        }
+        bool transChanged = (m_lastTransparency != curTrans);
+        m_lastTheme = curTheme;
+        m_lastTransparency = curTrans;
+
         RootGrid().RequestedTheme(isDark ? winrt::Microsoft::UI::Xaml::ElementTheme::Dark : winrt::Microsoft::UI::Xaml::ElementTheme::Light);
 
         if (g_Settings.transparencyEnabled)
@@ -256,17 +266,11 @@ namespace winrt::ThemeSwitcherApp::implementation
             COLORREF captionColor = isDark ? RGB(32, 32, 32) : RGB(243, 243, 243);
             DwmSetWindowAttribute(m_hwnd, DWMWA_CAPTION_COLOR, &captionColor, sizeof(captionColor));
 
-            int backdropType = g_Settings.transparencyEnabled ? DWMSBT_TRANSIENTWINDOW : DWMSBT_NONE;
-            DwmSetWindowAttribute(m_hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
-
-            // Native FlyoutWindow DWM border (matches ClickBrightness)
-            COLORREF borderColor = DWMWA_COLOR_DEFAULT;
-            DwmSetWindowAttribute(m_hwnd, DWMWA_BORDER_COLOR, &borderColor, sizeof(borderColor));
-
-            int ncPolicy = 0;
-            DwmSetWindowAttribute(m_hwnd, DWMWA_NCRENDERING_POLICY, &ncPolicy, sizeof(ncPolicy));
-
-            SetWindowPos(m_hwnd, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED | SWP_NOACTIVATE);
+            if (transChanged)
+            {
+                int backdropType = g_Settings.transparencyEnabled ? DWMSBT_TRANSIENTWINDOW : DWMSBT_NONE;
+                DwmSetWindowAttribute(m_hwnd, DWMWA_SYSTEMBACKDROP_TYPE, &backdropType, sizeof(backdropType));
+            }
         }
 
         // Layout matching FlyoutWindow (no inner XAML border, native DWM border handles frame)
@@ -296,11 +300,15 @@ namespace winrt::ThemeSwitcherApp::implementation
             ? winrt::Microsoft::UI::ColorHelper::FromArgb(200, 200, 200, 200)
             : winrt::Microsoft::UI::ColorHelper::FromArgb(200, 96, 96, 96);
         ModeTargetText().Foreground(winrt::Microsoft::UI::Xaml::Media::SolidColorBrush(subColor));
+        return true;
     }
 
     void OverlayWindow::ResetGraphics()
     {
         if (m_isVisible) return; // Do NOT reset or flash backdrop while OSD is visible on screen!
+        m_lastTheme = -1;
+        m_lastTransparency = -1;
+        m_contentState = -1;
         bool isDark = DetermineOsdIsDark(m_displayedState);
         DetachBackdrop();
         SetupBackdrop(isDark);
@@ -323,8 +331,16 @@ namespace winrt::ThemeSwitcherApp::implementation
         RootGrid().UpdateLayout();
     }
 
-    void OverlayWindow::UpdateContent(int themeState, const std::wstring& target)
+    bool OverlayWindow::UpdateContent(int themeState, const std::wstring& target)
     {
+        if (m_contentState == themeState && m_contentTarget == target && m_contentLang == g_Settings.language)
+        {
+            return false;
+        }
+        m_contentState = themeState;
+        m_contentTarget = target;
+        m_contentLang = g_Settings.language;
+
         if (themeState == 0)
         {
             ModeIcon().Glyph(L"\xE708"); // Moon
@@ -352,9 +368,10 @@ namespace winrt::ThemeSwitcherApp::implementation
         {
             ModeTargetText().Text(g_Loc.Get(L"OSD_TargetBoth", L"Apps & Windows"));
         }
+        return true;
     }
 
-    void OverlayWindow::PositionWindow(bool waitExtra)
+    void OverlayWindow::PositionWindow()
     {
         if (!m_hwnd || !m_appWindow) return;
 
@@ -402,13 +419,12 @@ namespace winrt::ThemeSwitcherApp::implementation
             BOOL cloak = TRUE;
             DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
             m_currentY = g_Settings.osdAnimationEnabled ? (targetY + m_slideOffset) : targetY;
-            SetWindowPos(m_hwnd, hInsertAfter, targetX, m_currentY, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOCOPYBITS);
+            SetWindowPos(m_hwnd, hInsertAfter, targetX, m_currentY, width, height, swpFlags | SWP_SHOWWINDOW | SWP_NOCOPYBITS);
             if (sizeChanged)
             {
                 RootGrid().UpdateLayout();
             }
-            UINT uncloakDelay = waitExtra ? 100 : 16;
-            SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, uncloakDelay, NULL);
+            SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, 16, NULL);
             m_isVisible = true;
             m_animState = g_Settings.osdAnimationEnabled ? AnimState::Showing : AnimState::None;
         }
@@ -448,26 +464,13 @@ namespace winrt::ThemeSwitcherApp::implementation
         }
 
         bool targetIsDark = DetermineOsdIsDark(themeState);
-        bool currentIsDark = DetermineOsdIsDark(m_displayedState);
-        bool themeMismatch = (targetIsDark != currentIsDark);
 
         m_displayedState = themeState;
         m_displayedTarget = target;
 
-        if (themeMismatch)
-        {
-            DetachBackdrop();
-            SetupBackdrop(targetIsDark);
-        }
-
         UpdateTheme(targetIsDark);
         UpdateContent(themeState, target);
-        PositionWindow(themeMismatch);
-
-        if (m_backdropConfig)
-        {
-            m_backdropConfig.IsInputActive(true);
-        }
+        PositionWindow();
 
         int timeout = g_Settings.osdTimeoutMs;
         if (timeout < 200) timeout = 1500;
@@ -477,7 +480,6 @@ namespace winrt::ThemeSwitcherApp::implementation
 
         if (m_hwnd)
         {
-            KillTimer(m_hwnd, IDT_OVERLAY_HIDE);
             SetTimer(m_hwnd, IDT_OVERLAY_HIDE, timeout, NULL);
         }
     }
@@ -488,9 +490,9 @@ namespace winrt::ThemeSwitcherApp::implementation
         m_displayedState = nextExpectedState;
         m_displayedTarget = target;
         bool isDark = DetermineOsdIsDark(nextExpectedState);
-        UpdateTheme(isDark);
-        UpdateContent(nextExpectedState, target);
-        if (m_hwnd)
+        bool changed = UpdateTheme(isDark);
+        changed |= UpdateContent(nextExpectedState, target);
+        if (changed && m_hwnd)
         {
             RootGrid().UpdateLayout();
         }

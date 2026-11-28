@@ -20,19 +20,10 @@ bool IsBusy() {
 }
 
 int ReadRegKey(const wchar_t* valueName, int defaultValue) {
-    HKEY hKey = NULL;
-    LONG lRes = RegOpenKeyExW(HKEY_CURRENT_USER, REG_PERSONALIZE, 0, KEY_READ, &hKey);
-    if (lRes != ERROR_SUCCESS) {
-        return defaultValue;
-    }
-
     DWORD dwValue = 0;
-    DWORD dwType = REG_DWORD;
     DWORD dwSize = sizeof(dwValue);
-    lRes = RegQueryValueExW(hKey, valueName, NULL, &dwType, (LPBYTE)&dwValue, &dwSize);
-    RegCloseKey(hKey);
-
-    if (lRes == ERROR_SUCCESS && dwType == REG_DWORD) {
+    LONG lRes = RegGetValueW(HKEY_CURRENT_USER, REG_PERSONALIZE, valueName, RRF_RT_REG_DWORD, NULL, &dwValue, &dwSize);
+    if (lRes == ERROR_SUCCESS) {
         return (int)(dwValue & 1);
     }
     return defaultValue;
@@ -209,19 +200,18 @@ void OnSettingChange(LPARAM lParam) {
 
 std::wstring GetTooltipText() {
     int state = GetState();
-    std::wstring lightStr = g_Loc.Get(L"Theme_Light", L"Light");
-    std::wstring darkStr = g_Loc.Get(L"Theme_Dark", L"Dark");
+    wchar_t buf[256];
 
     if (state == -1) {
-        std::wstring appStr = (ReadRegKey(L"AppsUseLightTheme", 1) == 0) ? darkStr : lightStr;
-        std::wstring sysStr = (ReadRegKey(L"SystemUsesLightTheme", 1) == 0) ? darkStr : lightStr;
-        wchar_t buf[256];
+        std::wstring lightStr = g_Loc.Get(L"Theme_Light", L"Light");
+        std::wstring darkStr = g_Loc.Get(L"Theme_Dark", L"Dark");
+        const std::wstring& appStr = (ReadRegKey(L"AppsUseLightTheme", 1) == 0) ? darkStr : lightStr;
+        const std::wstring& sysStr = (ReadRegKey(L"SystemUsesLightTheme", 1) == 0) ? darkStr : lightStr;
         swprintf_s(buf, g_Loc.Get(L"Tip_Mixed", L"Theme: Mixed (Apps %s, Win %s)").c_str(), appStr.c_str(), sysStr.c_str());
         return buf;
     }
 
-    std::wstring modeStr = (state == 0) ? darkStr : lightStr;
-    wchar_t buf[256];
+    std::wstring modeStr = (state == 0) ? g_Loc.Get(L"Theme_Dark", L"Dark") : g_Loc.Get(L"Theme_Light", L"Light");
     if (g_Settings.target == L"System") {
         swprintf_s(buf, g_Loc.Get(L"Tip_Windows", L"Windows Theme: %s").c_str(), modeStr.c_str());
     } else if (g_Settings.target == L"Both") {
