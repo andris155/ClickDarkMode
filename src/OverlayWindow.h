@@ -14,6 +14,7 @@ public:
     void Hide();
     void Destroy();
     void ResetGraphicsResources();
+    void RefreshOnDisplayChange();
     void PreArm(int nextExpectedState, const std::wstring& target);
     void SyncWithSystem();
 };

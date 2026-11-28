@@ -95,3 +95,12 @@ void OverlayWindow::ResetGraphicsResources()
         if (p) p->ResetGraphics();
     }
 }
+
+void OverlayWindow::RefreshOnDisplayChange()
+{
+    if (s_overlayWindow)
+    {
+        auto p = winrt::get_self<winrt::ThemeSwitcherApp::implementation::OverlayWindow>(s_overlayWindow);
+        if (p) p->RefreshOnDisplayChange();
+    }
+}

@@ -36,6 +36,7 @@ static const wchar_t* MAIN_WND_CLASS = L"ClickDarkMode_MessageWndClass";
 static HWND g_hMainWnd = NULL;
 static UINT g_uTaskbarRestartMsg = 0;
 static constexpr UINT_PTR IDT_GPU_RESET_COOLDOWN = 1006;
+static bool s_pendingFullGpuReset = false;
 static HANDLE s_hEvents[5] = { NULL, NULL, NULL, NULL, NULL };
 static HANDLE s_hStopEvent = NULL;
 static std::atomic<bool> s_ipcRunning{ false };
@@ -93,6 +94,7 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             // DBT_DEVNODES_CHANGED (0x0007) is broadcast when GPU driver restarts/reloads or display devices change
             if (wParam == DBT_DEVNODES_CHANGED || wParam == 0x0007)
             {
+                s_pendingFullGpuReset = true;
                 SetTimer(hwnd, IDT_GPU_RESET_COOLDOWN, 1500, NULL);
             }
             return 0;
@@ -201,7 +203,17 @@ static LRESULT CALLBACK MainWndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             else if (wParam == IDT_GPU_RESET_COOLDOWN)
             {
                 KillTimer(hwnd, IDT_GPU_RESET_COOLDOWN);
-                g_OverlayWindow.ResetGraphicsResources();
+                bool fullGpuReset = s_pendingFullGpuReset;
+                s_pendingFullGpuReset = false;
+
+                if (fullGpuReset)
+                {
+                    g_OverlayWindow.ResetGraphicsResources();
+                }
+                else
+                {
+                    g_OverlayWindow.RefreshOnDisplayChange();
+                }
                 TrayIcon::CloseTrayMenu();
                 TrayIcon::SyncUI();
                 return 0;

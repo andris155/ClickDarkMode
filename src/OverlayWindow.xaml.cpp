@@ -305,22 +305,22 @@ namespace winrt::ThemeSwitcherApp::implementation
         DetachBackdrop();
         SetupBackdrop(isDark);
         UpdateTheme(isDark);
-        if (m_hwnd)
-        {
-            HMONITOR hMon = MonitorFromPoint({ 0, 0 }, MONITOR_DEFAULTTOPRIMARY);
-            UINT dpi = DpiHelper::GetDpiForMonitor(hMon);
-            if (dpi == 0) dpi = GetDpiForWindow(m_hwnd);
-            if (dpi == 0) dpi = 96;
-            int width = DpiHelper::Scale(kOsdWidthDip, dpi);
-            int height = DpiHelper::Scale(kOsdHeightDip, dpi);
-            if (m_lastW != width || m_lastH != height)
-            {
-                m_lastW = width;
-                m_lastH = height;
-                SetWindowPos(m_hwnd, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-            }
-            RootGrid().UpdateLayout();
-        }
+        RefreshOnDisplayChange();
+    }
+
+    void OverlayWindow::RefreshOnDisplayChange()
+    {
+        if (m_isVisible || !m_hwnd) return;
+        HMONITOR hMon = MonitorFromPoint({ 0, 0 }, MONITOR_DEFAULTTOPRIMARY);
+        UINT dpi = DpiHelper::GetDpiForMonitor(hMon);
+        if (dpi == 0) dpi = GetDpiForWindow(m_hwnd);
+        if (dpi == 0) dpi = 96;
+        int width = DpiHelper::Scale(kOsdWidthDip, dpi);
+        int height = DpiHelper::Scale(kOsdHeightDip, dpi);
+        m_lastW = width;
+        m_lastH = height;
+        SetWindowPos(m_hwnd, NULL, 0, 0, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
+        RootGrid().UpdateLayout();
     }
 
     void OverlayWindow::UpdateContent(int themeState, const std::wstring& target)
@@ -403,7 +403,10 @@ namespace winrt::ThemeSwitcherApp::implementation
             DwmSetWindowAttribute(m_hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
             m_currentY = g_Settings.osdAnimationEnabled ? (targetY + m_slideOffset) : targetY;
             SetWindowPos(m_hwnd, hInsertAfter, targetX, m_currentY, width, height, SWP_NOACTIVATE | SWP_SHOWWINDOW | SWP_NOCOPYBITS);
-            RootGrid().UpdateLayout();
+            if (sizeChanged)
+            {
+                RootGrid().UpdateLayout();
+            }
             UINT uncloakDelay = waitExtra ? 100 : 16;
             SetTimer(m_hwnd, IDT_OVERLAY_UNCLOAK, uncloakDelay, NULL);
             m_isVisible = true;

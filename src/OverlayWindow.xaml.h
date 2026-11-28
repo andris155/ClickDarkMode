@@ -17,6 +17,7 @@ namespace winrt::ThemeSwitcherApp::implementation
         void UpdateContent(int themeState, const std::wstring& target);
         void UpdateTheme(bool isDark);
         void ResetGraphics();
+        void RefreshOnDisplayChange();
         void PositionWindow(bool waitExtra = false);
         void PreArm(int nextExpectedState, const std::wstring& target);
         void SyncWithSystem();
