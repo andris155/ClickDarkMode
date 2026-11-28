@@ -417,11 +417,17 @@ void Remove() {
         Shell_NotifyIconW(NIM_DELETE, &s_nid);
         s_isInstalled = false;
     }
+    s_activeIconFile.clear();
+    s_activeIconNumber = 1;
     if (s_hCurrentIcon) {
         DestroyIcon(s_hCurrentIcon);
         s_hCurrentIcon = NULL;
     }
 }
+
+static int s_activeIconCx = 0;
+static int s_activeIconCy = 0;
+static std::wstring s_activeTip;
 
 void SyncUI() {
     int state = ThemeManager::GetState();
@@ -467,22 +473,34 @@ void SyncUI() {
     if (cx <= 0) cx = 16;
     if (cy <= 0) cy = 16;
 
-    HICON hNewIcon = LoadIconResource(targetFile, targetNum, cx, cy);
-    if (hNewIcon) {
-        if (s_hCurrentIcon) {
-            DestroyIcon(s_hCurrentIcon);
+    bool iconChanged = (!s_hCurrentIcon || s_activeIconFile != targetFile ||
+                        s_activeIconNumber != targetNum || s_activeIconCx != cx || s_activeIconCy != cy);
+    if (iconChanged) {
+        HICON hNewIcon = LoadIconResource(targetFile, targetNum, cx, cy);
+        if (hNewIcon) {
+            if (s_hCurrentIcon) {
+                DestroyIcon(s_hCurrentIcon);
+            }
+            s_hCurrentIcon = hNewIcon;
+            s_nid.hIcon = s_hCurrentIcon;
+            s_activeIconFile = targetFile;
+            s_activeIconNumber = targetNum;
+            s_activeIconCx = cx;
+            s_activeIconCy = cy;
+        } else {
+            iconChanged = false;
         }
-        s_hCurrentIcon = hNewIcon;
-        s_nid.hIcon = s_hCurrentIcon;
-        s_activeIconFile = targetFile;
-        s_activeIconNumber = targetNum;
     }
 
     std::wstring tip = ThemeManager::GetTooltipText();
-    wcsncpy_s(s_nid.szTip, ARRAYSIZE(s_nid.szTip), tip.c_str(), _TRUNCATE);
+    bool tipChanged = (s_activeTip != tip);
+    if (tipChanged) {
+        wcsncpy_s(s_nid.szTip, ARRAYSIZE(s_nid.szTip), tip.c_str(), _TRUNCATE);
+        s_activeTip = tip;
+    }
 
-    if (s_isInstalled) {
-        s_nid.uFlags = NIF_ICON | NIF_TIP | NIF_SHOWTIP;
+    if (s_isInstalled && (iconChanged || tipChanged)) {
+        s_nid.uFlags = (iconChanged ? NIF_ICON : 0) | (tipChanged ? (NIF_TIP | NIF_SHOWTIP) : 0);
         Shell_NotifyIconW(NIM_MODIFY, &s_nid);
     }
 }
